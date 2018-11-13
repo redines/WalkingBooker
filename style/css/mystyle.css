@@ -1,0 +1,33 @@
+* {
+    margin:0;
+    padding:0;
+}
+
+
+/*Grid layout*/
+.container{
+    display:grid;
+    grid-template-rows: 1fr 4fr;
+    background-color: #dfdfdf;
+}
+
+.top-nav{
+    background-color: rgb(104, 98, 98);
+    grid-area: 1 /1 / 1 / span 3;
+}
+
+.login{
+    grid-area: 2/ 3 / 2 /2; 
+    background-color: blue;
+}
+
+/*Style Login Form*/
+input {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
