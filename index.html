@@ -17,19 +17,19 @@
     </div>
     <div id="logindiv" class="form">
         <input id="uname" type="text" name="UserName" placeholder="Input username">
-        <button id="loginbtn" name="login">Login</button>
+        <button onclick="loginCheck()" name="login">Login</button>
     </div>
+
     <div id="bookform" class="form">
-        <input id="uname" type="text" name="UserName" placeholder="Name of walker to book">
+        <input id="wname" type="text" placeholder="Name of walker to book">
+        <input oninput="slideShowValue()" id="distance" type="range" name="distance" min="1" max="10">
+        <div><output name="distanceOutput" id="distanceOutput">1</output></div>
         <input id="uname" type="text" name="UserName" placeholder="Input username">
         <input id="uname" type="text" name="UserName" placeholder="Input username">
         <input id="uname" type="text" name="UserName" placeholder="Input username">
-        <input id="uname" type="text" name="UserName" placeholder="Input username">
-        <button id="submit" name="submit">Book walker</button>
+        <button onclick="nameCheck()" name="submit">Book walker</button>
     </div>
 </div>
-
-
 
 <script type="text/javascript" src="src/main.js"></script>
 </body>

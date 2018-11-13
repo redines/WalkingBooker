@@ -1,16 +1,10 @@
-/*Form validation */
+/*Login form validation */
+let user = document.getElementById("loggedin");
 let loginform = document.getElementById("logindiv");
 let loginbtn = document.getElementById("loginbtn");
-loginbtn.addEventListener("click", loginCheck)
 
 let unameinput = document.getElementById("uname");
 let unamevalue = unameinput.value;
-
-/*Book form*/
-let user = document.getElementById("loggedin");
-let bookingform = document.getElementById("bookform");
-bookingform.style.display = "none";
-
 
 function loginCheck(){
     console.log("Called logincheck");
@@ -26,3 +20,25 @@ function loginCheck(){
       }
 }
 
+/*Book form*/
+let bookingform = document.getElementById("bookform");
+let distanceSlide = document.getElementById("distance");
+let distanceOutput = document.getElementById("distanceOutput");
+let walkerNamein = document.getElementById("wname");
+let walkerNameinValue = walkerNamein.value;
+bookingform.style.display = "none";
+
+function nameCheck(){
+  console.log("Called nameCheck");
+  if(walkerNameinValue.match(/[A-Za-z]*/)!=null){
+    walkerNamein.style.backgroundColor = "green";
+      console.log("correct name");
+    }else{
+      walkerNamein.style.backgroundColor = "red";
+      console.log("bad name");
+    }
+}
+
+function slideShowValue(){
+  distanceOutput.value = distanceSlide.value;
+}
