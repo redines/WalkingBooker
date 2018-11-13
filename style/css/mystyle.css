@@ -16,18 +16,27 @@
     grid-area: 1 /1 / 1 / span 3;
 }
 
-.login{
+.form{
     grid-area: 2/ 3 / 2 /2; 
-    background-color: blue;
 }
 
 /*Style Login Form*/
 input {
-    width: 100%;
+    width: 50%;
     padding: 12px 20px;
     margin: 8px 0;
     display: inline-block;
     border: 1px solid #ccc;
     border-radius: 4px;
     box-sizing: border-box;
+}
+
+button {
+    background-color: #8a8dbb;
+    padding:5px;
+    border-radius: 10%;
+}
+
+#loggedin{
+    text-align: right;
 }
