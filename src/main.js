@@ -90,3 +90,25 @@ function remove_char_from_string(text, character) {
   return text;
 }
 
+/*Book form*/
+let bookingform = document.getElementById("bookform");
+let distanceSlide = document.getElementById("distance");
+let distanceOutput = document.getElementById("distanceOutput");
+let walkerNamein = document.getElementById("wname");
+let walkerNameinValue = walkerNamein.value;
+bookingform.style.display = "none";
+
+function nameCheck(){
+  console.log("Called nameCheck");
+  if(walkerNameinValue.match(/[A-Za-z]*/)!=null){
+    walkerNamein.style.backgroundColor = "green";
+      console.log("correct name");
+    }else{
+      walkerNamein.style.backgroundColor = "red";
+      console.log("bad name");
+    }
+}
+
+function slideShowValue(){
+  distanceOutput.value = distanceSlide.value;
+}
