@@ -1,36 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!--Style-->
     <link rel="stylesheet" type="text/css" href="style/css/mystyle.css">
+
     <title>WalkBook</title>
 </head>
-<body>
 
-<div class="container">
-    <div class="top-nav">
-        <h1>WalkBook</h1>
-        <span id="loggedin"></span>
+<body onload="check_stored_user()">
+
+    <div class="container">
+        <div class="top-nav">
+            <h1>WalkBook</h1>
+            <span id="loggedin"></span>
+        </div>
+        <div id="logindiv" class="form">
+            <input id="uname" type="text" name="UserName" placeholder="Input username">
+            <button id="loginbtn" name="login">Login</button>
+            <div id="error"></div>
+        </div>
+
+        <div id="userpage">
+            <div id="bookform" class="form">
+                <h1 id="welcomemsg"></h1>
+                <input id="walkerName" type="text" name="UserName" placeholder="Name of walker to book">
+                <input oninput="slideShowValue()" id="distance" type="range" name="distance" min="1" max="10">
+                <div><output name="distanceOutput" id="distanceOutput">1</output></div>
+                <input id="uname" type="text" name="UserName" placeholder="Input username">
+                <input id="uname" type="text" name="UserName" placeholder="Input username">
+                <input id="uname" type="text" name="UserName" placeholder="Input username">
+                <button id="Book" name="Book">Book walker</button>
+            </div>
+        </div>
+        <div id="bookings">
+            <h3>Booked walker</h3>
+            <ul id="bookedWalkers">
+
+            </ul>
+        </div>
     </div>
-    <div id="logindiv" class="form">
-        <input id="uname" type="text" name="UserName" placeholder="Input username">
-        <button id="loginbtn" name="login">Login</button>
-    </div>
-    <div id="bookform" class="form">
-        <input id="uname" type="text" name="UserName" placeholder="Name of walker to book">
-        <input id="uname" type="text" name="UserName" placeholder="Input username">
-        <input id="uname" type="text" name="UserName" placeholder="Input username">
-        <input id="uname" type="text" name="UserName" placeholder="Input username">
-        <input id="uname" type="text" name="UserName" placeholder="Input username">
-        <button id="submit" name="submit">Book walker</button>
-    </div>
-</div>
 
 
 
-<script type="text/javascript" src="src/main.js"></script>
+    <script type="text/javascript" src="src/main.js"></script>
 </body>
+
 </html>
