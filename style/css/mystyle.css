@@ -21,6 +21,22 @@
     grid-area: 2/ 3 / 2 /2;
 }
 
+#signUpPage{
+    grid-area: 2/2 / 2/2;
+}
+
+#searchPage{
+    grid-column: 3/3;
+}
+
+#bookings h3{
+ border-bottom: 2px solid black;
+}
+
+li{
+    margin-top:5%;
+}
+
 /*Style Login Form*/
 input {
     padding: 12px 20px;
@@ -45,14 +61,7 @@ button {
     text-align: right;
 }
 
-#bookings{
-    grid-area: 2 / 1 / 2 / 1;
-}
-
-#bookings h3{
- border-bottom: 2px solid black;
-}
-
-li{
-    margin-top:5%;
+/*Style Error message*/
+#error{
+    color:red;
 }
