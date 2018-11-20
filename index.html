@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!--Style-->
-    <link rel="stylesheet" type="text/css" href="style/css/mystyle.css">
+    <link rel="stylesheet" type="text/css" href="src/style/css/mystyle.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 
     <title>WalkBook</title>
@@ -24,51 +24,53 @@
         <div id="logindiv" class="form">
             <input id="uname" type="text" name="UserName" placeholder="Input username">
             <button id="loginbtn" name="login">Login</button>
-            <button id="signUpForm">Sign up</button>
+            <button id="signUpBtn">Sign up</button>
         </div>
-        <div id="signUpPage">
+        <div id="signUpdiv">
             <div id="signUpForm" class="form">
                 <h1 id="welcomemsg"></h1>
-                <input id="accountName" type="text" name="accountName" placeholder="accountName">
-                <input id="mobnr" type="text" name="mobnr" placeholder="Cellphone number">
-                <input id="city" type="text" name="city" placeholder="city">
-                <input id="street" type="text" name="street" placeholder="street">
-                <input type="month" name="bday" placeholder="birthday">
+                <input id="fname" type="text" placeholder="First name">
+                <input id="lname" type="text" placeholder="Last name">
+                <input id="adress" type="text" placeholder="Adress">
+                <input id="cellphonenr" type="text" placeholder="Cell number">
+                <div><label>Birthday:<input type="date"></label></div>
             </div>
-            <button id="signupBtn" name="SignUp">Sign up!</button>
-            <button id="cancel" name="cancel">Cancel sign up!</button>
+            <button id="signup">Sign up!</button>
+            <button id="cancel">Cancel sign up!</button>
         </div>
 
         <div id="userpage">
-            <div id="bookform" class="form">
-                <h1 id="welcomemsg"></h1>
-                <input id="walkerName" type="text" name="UserName" placeholder="Name of walker to book">
-                <div>Distance:<input oninput="slideShowValue()" id="distance" type="range" name="distance" min="1" max="10">
-                    <output name="distanceOutput" id="distanceOutput">0</output></div>
-                <div>
-                    <h3>Choose what you want the walker to walk with</h3>
-                    <span>
-                        <label><input id="c1" type="radio" name="choice" value="pokemonGO">Pokemon GO</label>
-                        <label><input id="c2" type="radio" name="choice" value="friend">A friend</label>
-                        <label><input id="c3" type="radio" name="choice" value="dog">My dogs</label>
-                    </span>
+            <div class="container">
+                <div id="bookform" class="form">
+                    <h1 id="welcomemsg"></h1>
+                    <input id="walkerName" type="text" name="UserName" placeholder="Name of walker to book">
+                    <div>Distance:<input oninput="slideShowValue()" id="distance" type="range" name="distance" min="1" max="10">
+                        <output name="distanceOutput" id="distanceOutput">0</output></div>
+                    <div>
+                        <h3>Choose what you want the walker to walk with</h3>
+                        <span>
+                            <label><input id="c1" type="radio" name="choice" value="pokemonGO">Pokemon GO</label>
+                            <label><input id="c2" type="radio" name="choice" value="friend">A friend</label>
+                            <label><input id="c3" type="radio" name="choice" value="dog">My dogs</label>
+                        </span>
+                    </div>
+                    <button id="Book" name="Book">Book walker</button>
                 </div>
-                <button id="Book" name="Book">Book walker</button>
-            </div>
-            <div id="bookings">
-                <h3>Booked walker</h3>
-                <ul id="cart">
+                <div id="bookings">
+                    <h3>Booked walker</h3>
+                    <ul id="cart">
 
-                </ul>
-            </div>
-        </div>
-        <div id="searchPage">
-            <input id="searchWalker" type="search" placeholder="Search for walker">
-            <button type="button">Search</button>
-            <div id="searchResult">
-                <ul>
-                    <li>Placeholder serach res item</li>
-                </ul>
+                    </ul>
+                </div>
+                <div id="searchPage">
+                    <input id="searchWalker" type="search" placeholder="Search for walker">
+                    <button type="button">Search</button>
+                    <div id="searchResult">
+                        <ul>
+                            <li>Placeholder serach res item</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

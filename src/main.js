@@ -2,88 +2,94 @@
  * TODO:
  * Function som hanterar att visa/inte visa "pages"
  * Do form validation with Jquery for booking form
+ * add keypress event
  * */
 
 /*Error handeling */
-let error = document.getElementById('error');
+function errors(err){
+  let errorElem = document.getElementById('error');
+  //unameinput.style.borderColor = "red";
+  errorElem.innerHTML = err;
+}
 
-/*Login*/
-let loginform = document.getElementById("logindiv");
-let loginbtn = document.getElementById("loginbtn");
-loginbtn.addEventListener("click", check_email);
+/*
+Content handler - for switching between different content on webpage by hiding/showing div-elements 
+Parameters:
+-type: string
+-content: name of content to show
+*/
+function content_handler(content){
+  let loginform = document.getElementById("logindiv");
+  let UserPage = document.getElementById("userpage");
+  let LogOutBtn = document.getElementById("logoutBtn");
+  //console.log('content: ', content);
 
-let LogOutBtn = document.getElementById("logoutBtn");
-LogOutBtn.style.display = 'none';
-
-
-let user = document.getElementById("loggedin");
-
-function check_stored_user() {
-  if (localStorage.getItem('user') != null) {
-    loginform.style.display = "none";
-    bookingform.style.display = "block";
-    bookings.style.display = 'block';
-    LogOutBtn.style.display = 'block';
-  }
-  else {
-    console.log("user not loged in before");
+  LogOutBtn.addEventListener('click', logout);
+  
+  if(content === 'logindiv'){
+    loginform.style.display = "block";
+    UserPage.style.display = "none";
+    LogOutBtn.style.display = 'none';
+  
+  }else if(content === 'userpage'){
+  document.getElementById('signUpdiv').style.display = 'none';
+  loginform.style.display = "none";
+  UserPage.style.display = "block";
+  LogOutBtn.style.display = 'block';
   }
 }
 
-function check_email() {
+/*Login*/
+
+let loginbtn = document.getElementById("loginbtn");
+loginbtn.addEventListener("click", check_creds);
+
+function check_stored_user() {
+  if (localStorage.getItem('user') != null) {
+    content_handler('userpage');
+  }
+  else {
+    content_handler('logindiv');
+    console.log("no user logged in");
+  }
+}
+
+function check_creds() {
   let unameinput = document.getElementById("uname");
   let unamevalue = unameinput.value;
 
-  if (unamevalue.match(/[A-Za-z0-9.]+@/) != null) {
-    loginform.style.display = "none";
-    bookingform.style.display = "block";
-    user.innerHTML = "Logged in user: " + remove_char_from_string(unamevalue, '@');
+  if (unamevalue.match(/[A-Za-z]/) != null) {
     store_logedin_user(unamevalue);
-    Bookings(unamevalue);
-    error.innerHTML = '';
+    welcome_message(unamevalue);
+    content_handler('userpage');
   } else {
-    unameinput.style.borderColor = "red";
-    error.innerHTML = 'You did not send a valid email, please check and try again :)';
+    errors("Something went wrong! try again");
   }
 }
 
 function store_logedin_user(activeUser) {
   if (typeof (Storage) !== "undefined") {
     localStorage.setItem("user", activeUser);
-    console.log("web storage: ", localStorage.getItem('user'));
+    //console.log("web storage: ", localStorage.getItem('user'));
   } else {
-    alert("Web storage is not supported by your browser! Login will not be saved");
+    errors("Web storage is not supported by your browser! Login will not be saved");
   }
 }
 
 /*Logout */
-let logoutBtn = document.getElementById('logoutBtn');
-LogOutBtn.addEventListener('click', logout);
-
 function logout() {
-  loginform.style.display = "block";
-  bookingform.style.display = "none";
+
   localStorage.removeItem('user');
+  content_handler('logindiv');
 }
 
-/*Booked walkers list */
-let bookings = document.getElementById("bookings");
-bookings.style.display = 'none';
-
-
-
-function Bookings(activeUser) {
+/*Function for showin a welcome message for active user */
+function welcome_message(activeUser) {
   let welcomeMsg = document.getElementById('welcomemsg');
-  welcomeMsg.innerHTML = "Welcome " + remove_char_from_string(activeUser, '@');
-  bookings.style.display = 'block';
-  logoutBtn.style.display = 'block';
+  welcomeMsg.innerHTML = "Welcome " + activeUser;
 }
 
 /*Book form*/
-let bookingform = document.getElementById("userpage");
-bookingform.style.display = "none";
-
-
 let BookWalker = document.getElementById('Book');
 BookWalker.addEventListener('click', Bookwalker);
 
@@ -138,16 +144,52 @@ function remove_char_from_string(text, character) {
 /*JQUERY*/
 
 /*Sign up*/
-$('#signUpPage').css("display",'none');
+$('#signUpdiv').css("display",'none');
 
-$("#signUpForm").click(function(e) {
-  document.getElementById('signUpPage').style.display = 'block';
+$("#signUpBtn").click(function(e) {
+  document.getElementById('signUpdiv').style.display = 'block';
 });
 
 $("#cancel").click(function(e) {
-  document.getElementById('signUpPage').style.display = 'none';
+  $('#signUpdiv').detach();
 });
 
-$("#signupBtn").click(function(e) {
-  console.log("You signed up an account, start booking!");
+$("#loginbtn").keyup(function(e){
+  let EnterKey = e.which;
+  if(EnterKey === 13){
+  alert("hey!");
+  }
 });
+
+$("#signup").click(function(e) {
+  sign_up_validation();
+});
+
+function sign_up_validation(){
+  let Fname = $('#fname').val();
+  let Lname = $('#lname').val();
+  let Adress = $('#adress').val();
+  let Cellphone = $('#cellphonenr').val();
+
+  
+  if (Fname.match(/[A-Za-z]/) != null) {
+    errors("all good");
+  } else {
+    errors("Form was not completed correctly, try again!");
+  }
+  if (Lname.match(/[A-Za-z]/) != null) {
+    errors("all good");
+  } else {
+    errors("Form was not completed correctly, try again!");
+  }
+  if (Adress.match(/[A-Za-z0-9åäö ]/) != null) {
+    errors("all good");
+  } else {
+    errors("adress not good");
+  }
+  if (Fname.match(/[A-Za-z]/) != null) {
+    errors("all good");
+  } else {
+    errors("Form was not completed correctly, try again!");
+  }
+}
