@@ -12,6 +12,9 @@ let loginform = document.getElementById("logindiv");
 let loginbtn = document.getElementById("loginbtn");
 loginbtn.addEventListener("click", check_email);
 
+let LogOutBtn = document.getElementById("logoutBtn");
+LogOutBtn.style.display = 'none';
+
 
 let user = document.getElementById("loggedin");
 
@@ -20,17 +23,11 @@ function check_stored_user() {
     loginform.style.display = "none";
     bookingform.style.display = "block";
     bookings.style.display = 'block';
+    LogOutBtn.style.display = 'block';
   }
   else {
     console.log("user not loged in before");
   }
-}
-/*Sign up*/
-let SignUpBtn = document.getElementById('signup');
-document.getElementById('signUpPage').style.display = 'none';
-SignUpBtn.addEventListener('click',sign_up);
-function sign_up(){
-document.getElementById('signUpPage').style.display = 'block';
 }
 
 function check_email() {
@@ -61,7 +58,7 @@ function store_logedin_user(activeUser) {
 
 /*Logout */
 let logoutBtn = document.getElementById('logoutBtn');
-logoutBtn.addEventListener('click', logout);
+LogOutBtn.addEventListener('click', logout);
 
 function logout() {
   loginform.style.display = "block";
@@ -79,10 +76,11 @@ function Bookings(activeUser) {
   let welcomeMsg = document.getElementById('welcomemsg');
   welcomeMsg.innerHTML = "Welcome " + remove_char_from_string(activeUser, '@');
   bookings.style.display = 'block';
+  logoutBtn.style.display = 'block';
 }
 
 /*Book form*/
-let bookingform = document.getElementById("bookform");
+let bookingform = document.getElementById("userpage");
 bookingform.style.display = "none";
 
 
@@ -91,7 +89,7 @@ BookWalker.addEventListener('click', Bookwalker);
 
 //Function to be able to book a walker
 function Bookwalker() {
-  let WalkerName = document.getElementById('walkerName').value;
+  let WalkerName = document.getElementById('walkerName');
   let WalkDistance = document.getElementById('distance').value;
   let choice_one = document.getElementById('c1');
   let choice_one_value;
@@ -112,15 +110,15 @@ function Bookwalker() {
     console.log("choice: ", choice_three_value);
   }
 
-  if (WalkerName.value != '' && WalkDistance != '' && choice_one_value != '' || choice_two_value != '' || choice_three_value != '') {
+  //if (WalkerName.value != '' && WalkDistance != '' && choice_one_value != '' || choice_two_value != '' || choice_three_value != '') {
     cart.innerHTML += "<li>" + WalkerName.value + "</li>";
     error.innerHTML = '';
     BookWalker.style.borderBottomColor = "green";
-  } else {
+  //} else {
     //console.log(bookedWalker.value);
-    BookWalker.style.borderColor = "red";
-    error.innerHTML = 'You did not enter correct information to book a walker';
-  }
+    //BookWalker.style.borderColor = "red";
+    //error.innerHTML = 'You did not enter correct information to book a walker';
+  //}
 }
 
 /*Distance slider */
@@ -136,3 +134,20 @@ function remove_char_from_string(text, character) {
   text = text.replace(character, '');
   return text;
 }
+
+/*JQUERY*/
+
+/*Sign up*/
+$('#signUpPage').css("display",'none');
+
+$("#signUpForm").click(function(e) {
+  document.getElementById('signUpPage').style.display = 'block';
+});
+
+$("#cancel").click(function(e) {
+  document.getElementById('signUpPage').style.display = 'none';
+});
+
+$("#signupBtn").click(function(e) {
+  console.log("You signed up an account, start booking!");
+});
