@@ -6,8 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!--Style-->
+    <link rel="stylesheet" href="src/jquery-ui-1.12.1.custom/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="src/style/css/mystyle.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="src/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
 
     <title>WalkBook</title>
 </head>
@@ -17,8 +19,15 @@
     <div class="container">
         <div class="top-nav">
             <h1>WalkBook</h1>
+            <div id="usr">
+            <img id="usricon" src="src/style/usric.svg" alt="user icon"/>
+            Hover me
+            <div id="panel">
+                <span id="activeuser"></span>
+                <button id="logoutBtn">Logout</button>
+            </div>
+            </div>
             <span id="loggedin"></span>
-            <button id="logoutBtn">Logout</button>
             <div id="error"></div>
         </div>
         <div id="logindiv" class="form">
@@ -28,12 +37,12 @@
         </div>
         <div id="signUpdiv">
             <div id="signUpForm" class="form">
-                <h1 id="welcomemsg"></h1>
                 <input id="fname" type="text" placeholder="First name">
                 <input id="lname" type="text" placeholder="Last name">
                 <input id="adress" type="text" placeholder="Adress">
-                <input id="cellphonenr" type="text" placeholder="Cell number">
-                <div><label>Birthday:<input type="date"></label></div>
+                <input id="cellphonenr" type="tel" placeholder="Cell number">
+                <input id="email" type="email" placeholder="Email">
+                <div><label>Birthday:<input type="text" name="date" id="bday"></label></div>
             </div>
             <button id="signup">Sign up!</button>
             <button id="cancel">Cancel sign up!</button>
@@ -42,7 +51,6 @@
         <div id="userpage">
             <div class="container">
                 <div id="bookform" class="form">
-                    <h1 id="welcomemsg"></h1>
                     <input id="walkerName" type="text" name="UserName" placeholder="Name of walker to book">
                     <div>Distance:<input oninput="slideShowValue()" id="distance" type="range" name="distance" min="1" max="10">
                         <output name="distanceOutput" id="distanceOutput">0</output></div>

@@ -17,6 +17,22 @@
     grid-area: 1 /1 / 1 / span 3;
 }
 
+#usr{
+    width:10%;
+    height: 20%;
+}
+
+#usricon{
+    width: 20%;
+}
+
+#panel{
+    position: absolute;
+    width: 10%;
+    background-color: #dfdfdf;
+    border: 1px solid gray;
+}
+
 #userpage{
     grid-area: 2/ 1 / 2 / span 3;
 }
@@ -42,9 +58,15 @@
  border-bottom: 2px solid black;
 }
 
-li{
+ul{
+    list-style: none;
+}
+
+#bookings li{
+    text-align: center;
     margin-top:5%;
     margin-left:10%;
+    border:2px gray solid;
 }
 
 /*Style Login Form*/
@@ -61,6 +83,18 @@ input[type=text]:focus {
     border: 3px solid #555;
 }
 
+input[type=email]:focus {
+    border: 3px solid #555;
+}
+
+input[type=tel]:focus {
+    border: 3px solid #555;
+}
+
+input[type=date]:focus {
+    border: 3px solid #555;
+}
+
 button {
     background-color: #8a8dbb;
     padding:5px;
@@ -73,5 +107,7 @@ button {
 
 /*Style Error message*/
 #error{
-    color:red;
+    color:#dfdfdf;
+    position: relative;
+    left: 50px;
 }
