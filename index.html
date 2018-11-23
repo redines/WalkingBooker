@@ -31,18 +31,19 @@
             <div id="error"></div>
         </div>
         <div id="logindiv" class="form">
-            <input id="uname" type="text" name="UserName" placeholder="Input username">
+            <input id="uname" type="text" placeholder="Input username">
             <button id="loginbtn" name="login">Login</button>
             <button id="signUpBtn">Sign up</button>
         </div>
         <div id="signUpdiv">
             <div id="signUpForm" class="form">
+                <input id="usrname" type="text" placeholder="Username">
                 <input id="fname" type="text" placeholder="First name">
                 <input id="lname" type="text" placeholder="Last name">
                 <input id="adress" type="text" placeholder="Adress">
                 <input id="cellphonenr" type="tel" placeholder="Cell number">
                 <input id="email" type="email" placeholder="Email">
-                <div><label>Birthday:<input type="text" name="date" id="bday"></label></div>
+                <div><label>Birthday:<input type="text" id="bday"></label></div>
             </div>
             <button id="signup">Sign up!</button>
             <button id="cancel">Cancel sign up!</button>
@@ -51,7 +52,7 @@
         <div id="userpage">
             <div class="container">
                 <div id="bookform" class="form">
-                    <input id="walkerName" type="text" name="UserName" placeholder="Name of walker to book">
+                    <input id="walkerName" type="text" placeholder="Name of walker to book">
                     <div>Distance:<input oninput="slideShowValue()" id="distance" type="range" name="distance" min="1" max="10">
                         <output name="distanceOutput" id="distanceOutput">0</output></div>
                     <div>
