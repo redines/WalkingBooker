@@ -15,6 +15,7 @@
 .top-nav{
     background-color: rgb(104, 98, 98);
     grid-area: 1 /1 / 1 / span 3;
+    display: flex;
 }
 
 #usr{

@@ -147,17 +147,17 @@ let panel = document.getElementById('panel');
 panel.style.display = 'none';
 let UserIcon = document.getElementById('usr');
 UserIcon.addEventListener("mouseover",Show_panel);
-UserIcon.addEventListener("mouseout", hide_panel);
+UserIcon.addEventListener("mouseout", Hide_panel);
 
 
 function Show_panel(){
   console.log("hovering");
-  let y_pos = 60;
+  let y_pos = 40;
   panel.style.display = 'block';
   panel.style.top = y_pos+'px';
 }
 
-function hide_panel(){
+function Hide_panel(){
   console.log("Not hovering");
   panel.style.display = 'none';
 }
@@ -196,6 +196,7 @@ function sign_up_validation(){
   let Cellphone = $('#cellphonenr').val();
   let Email = $('#email').val();
 
+
     if (Fname.match(/[A-Öa-ö]/) != null) {
       console.log("fname ok:",Fname);
     } else {
@@ -221,4 +222,28 @@ function sign_up_validation(){
     } else {
       console.log("Email ok",Email)
     }
+    
+    add_new_usr_to_db(Fname,Lname,Adress,Cellphone,Email);
+}
+
+function add_new_usr_to_db(fname,lname,adress,cellphone,email){
+
+  $.ajax({
+    type: 'POST',
+    url: 'src/API/booking/makecustomer_XML.php',
+    data: {
+      id: 'pg9003',
+      firstname: escape(fname),
+      lastname: escape(lname),
+      email: escape(email),
+      address: escape(adress),
+      auxdata:escape(cellphone)
+    },
+    success:  returned		
+  });
+}
+
+function returned(returnedData){
+  var resultset=returnedData;
+  console.log(resultset);
 }
