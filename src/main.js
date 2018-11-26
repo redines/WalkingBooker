@@ -259,8 +259,12 @@ function add_new_customer(username, fname, lname, adress, cellphone, email) {
       address: encodeURIComponent(adress),
       auxdata: encodeURIComponent(cellphone)
     },
-    success: returned
+    success: customer_added
   });
+}
+
+function customer_added(returnedData){
+
 }
 
 function get_user(uname) {
