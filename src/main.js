@@ -20,11 +20,18 @@ function status_msg(err) {
   errorElem.innerHTML = err;
 }
 
+function errormsg(jqXHR,textStatus,errorThrown)
+{
+    console.log(jqXHR);
+    //status_msg("Please fill out form");
+    //alert("AJAX Error:\n"+errorThrown);
+}
+
 /*
 Content handler - for switching between different content on webpage by hiding/showing div-elements 
 Parameters:
 -type: string
--content: name of content to show
+-content: html id of content to show
 */
 function content_handler(content) {
   let loginform = document.getElementById("logindiv");
@@ -80,7 +87,7 @@ function login() {
       content_handler('userpage');
     }
   } else {
-    status_msg("User with that name does not exist");
+    status_msg("User with that name does not exist or no user inputed");
   }
 }
 
@@ -204,7 +211,6 @@ $("#signup").click(function (e) {
   sign_up_validation();
 });
 
-
 $("#bday").datepicker();
 
 function sign_up_validation() {
@@ -214,7 +220,6 @@ function sign_up_validation() {
   let Cellphone = $('#cellphonenr').val();
   let Email = $('#email').val();
   let UserName = $('#usrname').val();
-
 
   if (UserName.match(/[A-Öa-ö]/) != null) {
     console.log("username ok:", UserName);
@@ -247,7 +252,7 @@ function sign_up_validation() {
     console.log("Email ok", Email)
   }
 
-  add_new_customer(UserName, Fname, Lname, Adress, Cellphone, Email);
+  add_new_customer_to_db(UserName, Fname, Lname, Adress, Cellphone, Email);
 }
 
 function add_new_customer_to_db(username, fname, lname, adress, cellphone, email) {
@@ -262,7 +267,8 @@ function add_new_customer_to_db(username, fname, lname, adress, cellphone, email
       address: encodeURIComponent(adress),
       auxdata: encodeURIComponent(cellphone)
     },
-    success: customer_added
+    success: customer_added_to_db,
+    error: errormsg
   });
 }
 
@@ -275,6 +281,11 @@ function get_user_from_db(uname) {
     },
     success: returned_user
   });
+}
+
+function customer_added_to_db(returnedData){
+  alert('signed up!');
+  console.log(returnedData);
 }
 
 function returned_user_from_db(returnedData) {
