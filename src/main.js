@@ -14,7 +14,7 @@
 
 
 /*Error handeling */
-function errors(err) {
+function status_msg(err) {
   let errorElem = document.getElementById('error');
   //unameinput.style.borderColor = "red";
   errorElem.innerHTML = err;
@@ -53,7 +53,7 @@ function content_handler(content) {
 /*Login*/
 
 let loginbtn = document.getElementById("loginbtn");
-loginbtn.addEventListener("click", check_creds);
+loginbtn.addEventListener("click", login);
 
 function check_stored_user() {
   if (localStorage.getItem('user') != null) {
@@ -66,7 +66,7 @@ function check_stored_user() {
   }
 }
 
-function check_creds() {
+function login() {
   let unameinput = document.getElementById("uname");
   let unamevalue = unameinput.value;
 
@@ -75,12 +75,12 @@ function check_creds() {
     console.log("db: ",USERNAME, "form: ", unamevalue);
     if(USERNAME === unamevalue){
       console.log('username: ',USERNAME);
+      store_logedin_user(unamevalue);
+      active_user(unamevalue);
+      content_handler('userpage');
     }
-    //store_logedin_user(unamevalue);
-    //active_user(unamevalue);
-    //content_handler('userpage');
   } else {
-    errors("Username is wrongly inputed");
+    status_msg("User with that name does not exist");
   }
 }
 
@@ -91,7 +91,7 @@ function store_logedin_user(activeUser) {
     localStorage.setItem("user", activeUser);
     //console.log("web storage: ", localStorage.getItem('user'));
   } else {
-    errors("Web storage is not supported by your browser! Login will not be saved");
+    status_msg("Web storage is not supported by your browser! Login will not be saved");
   }
 }
 
@@ -103,8 +103,11 @@ function logout() {
 
 /*Function for showin a welcome message for active user */
 function active_user(activeUser) {
+  let welcomemsg = 'Welcome back! ' + activeUser;
+  let WelcomeElem = document.getElementById('welcomemsg');
   let ActiveUser = document.getElementById('activeuser');
   ActiveUser.innerHTML = "logedin user: " + activeUser;
+  WelcomeElem.innerHTML = welcomemsg;
 }
 
 /*Book form*/
@@ -167,7 +170,7 @@ UserIcon.addEventListener("mouseout", Hide_panel);
 
 function Show_panel() {
   console.log("hovering");
-  let y_pos = 40;
+  let y_pos = 35;
   panel.style.display = 'block';
   panel.style.top = y_pos + 'px';
 }
@@ -216,30 +219,30 @@ function sign_up_validation() {
   if (UserName.match(/[A-Öa-ö]/) != null) {
     console.log("username ok:", UserName);
   } else {
-    errors("First name was not input correctly");
+    status_msg("First name was not input correctly");
   }
   if (Fname.match(/[A-Öa-ö]/) != null) {
     console.log("fname ok:", Fname);
   } else {
-    errors("First name was not input correctly");
+    status_msg("First name was not input correctly");
   }
   if (Lname.match(/[A-Öa-ö]/) != null) {
     console.log("lname ok:", Lname);
   } else {
-    errors("Last name was not input correctly");
+    status_msg("Last name was not input correctly");
   }
   if (Adress.match(/[A-Öa-Ö]+\s+\d.+\d.+[A-Öa-ö]/) != null) {
     console.log("Adress ok:", Adress);
   } else {
-    errors("Not a valid adress");
+    status_msg("Not a valid adress");
   }
   if (Cellphone.match(/[0-9]+.*/) != null) {
     console.log("Cellphone ok:", Cellphone);
   } else {
-    errors("Not a correct cellphone number");
+    status_msg("Not a correct cellphone number");
   }
   if (Email.indexOf("@") == -1) {
-    errors("Missing @");
+    status_msg("Missing @");
   } else {
     console.log("Email ok", Email)
   }
@@ -259,7 +262,7 @@ function add_new_customer_to_db(username, fname, lname, adress, cellphone, email
       address: encodeURIComponent(adress),
       auxdata: encodeURIComponent(cellphone)
     },
-    success: returned
+    success: customer_added
   });
 }
 
