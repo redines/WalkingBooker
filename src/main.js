@@ -247,7 +247,7 @@ function sign_up_validation() {
   add_new_customer(UserName, Fname, Lname, Adress, Cellphone, Email);
 }
 
-function add_new_customer(username, fname, lname, adress, cellphone, email) {
+function add_new_customer_to_db(username, fname, lname, adress, cellphone, email) {
   $.ajax({
     type: 'POST',
     url: 'src/API/booking/makecustomer_XML.php',
@@ -263,7 +263,7 @@ function add_new_customer(username, fname, lname, adress, cellphone, email) {
   });
 }
 
-function get_user(uname) {
+function get_user_from_db(uname) {
   $.ajax({
     type: 'POST',
     url: 'src/API/booking/getcustomer_XML.php',
@@ -274,7 +274,7 @@ function get_user(uname) {
   });
 }
 
-function returned_user(returnedData) {
+function returned_user_from_db(returnedData) {
   var resultset = returnedData.childNodes[0];
   for (let i = 0; i < resultset.childNodes.length; i++) {
     var customer = resultset.childNodes.item(i);
