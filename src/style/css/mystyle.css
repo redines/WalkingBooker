@@ -3,7 +3,7 @@
     padding:0;
 }
 
-
+/*TODO: add scrollbar and better placement for list with bookings*/
 /*Grid layout*/
 .container{
     display:grid;

@@ -1,30 +1,36 @@
-/**
- * TODO:
- * Add error handeling with smarter error codes
- * add keypress event
- * */
+/*GLOBAL HTML REFERENCE VARIABLES */
+let unameinput = document.getElementById("uname");
+let loginbtn = document.getElementById("loginbtn");
+let BookWalker = document.getElementById('Book');
+let distanceSlide = document.getElementById("distance");
+let distanceOutput = document.getElementById("distanceOutput");
+let panel = document.getElementById('panel');
+let UserIcon = document.getElementById('usr');
 
-
-/**
+/*
  * GLOBAL VARIABLES:
- *  USERNAME - hold the account name of a user that exists in the database
+ * USERNAME - hold the account name of a user that exists in the database
+ * unamevalue - holds the inputed username from login input
  */
+ let USERNAME = '';
+ let unamevalue = '';
 
- let USERNAME = ''
-
+ /*Adding event liisteners */
+ loginbtn.addEventListener("click", get_user_from_db);
+ BookWalker.addEventListener('click', Bookwalker);
+ UserIcon.addEventListener("mouseover", Show_panel);
+ UserIcon.addEventListener("mouseout", Hide_panel);
 
 /*Error handeling */
-function status_msg(err) {
+//TODO: fix working error handeling
+//TODO: make error handeling more generall and flexible
+function status_msg(err,jqXHR,textStatus,errorThrown) {
   let errorElem = document.getElementById('error');
   //unameinput.style.borderColor = "red";
   errorElem.innerHTML = err;
-}
-
-function errormsg(jqXHR,textStatus,errorThrown)
-{
-    console.log(jqXHR);
-    //status_msg("Please fill out form");
-    //alert("AJAX Error:\n"+errorThrown);
+  console.log(jqXHR);
+  //status_msg("Please fill out form");
+  //alert("AJAX Error:\n"+errorThrown);
 }
 
 /*
@@ -57,11 +63,9 @@ function content_handler(content) {
   }
 }
 
-/*Login*/
-
-let loginbtn = document.getElementById("loginbtn");
-loginbtn.addEventListener("click", login);
-
+/*Checks if user is stored in localstorage, 
+will automaticly login user if user exists in storage 
+*/
 function check_stored_user() {
   if (localStorage.getItem('user') != null) {
     content_handler('userpage');
@@ -73,26 +77,7 @@ function check_stored_user() {
   }
 }
 
-function login() {
-  let unameinput = document.getElementById("uname");
-  let unamevalue = unameinput.value;
-
-  if (unamevalue.match(/[A-Öa-ö]/) != null) {
-    get_user(unamevalue);
-    console.log("db: ",USERNAME, "form: ", unamevalue);
-    if(USERNAME === unamevalue){
-      console.log('username: ',USERNAME);
-      store_logedin_user(unamevalue);
-      active_user(unamevalue);
-      content_handler('userpage');
-    }
-  } else {
-    status_msg("User with that name does not exist or no user inputed");
-  }
-}
-
-
-
+/*Stores loged in user in localstorage */
 function store_logedin_user(activeUser) {
   if (typeof (Storage) !== "undefined") {
     localStorage.setItem("user", activeUser);
@@ -102,7 +87,7 @@ function store_logedin_user(activeUser) {
   }
 }
 
-/*Logout */
+/*Logout and remove user from localstorage*/
 function logout() {
   localStorage.removeItem('user');
   content_handler('logindiv');
@@ -117,14 +102,16 @@ function active_user(activeUser) {
   WelcomeElem.innerHTML = welcomemsg;
 }
 
-/*Book form*/
-let BookWalker = document.getElementById('Book');
-BookWalker.addEventListener('click', Bookwalker);
+/*Book walker form*/
+$("#date").datepicker();
+let bookedDate = $("#date").datepicker("getDate");
 
 //Function to be able to book a walker
 function Bookwalker() {
   let WalkerName = document.getElementById('walkerName');
   let WalkDistance = document.getElementById('distance').value;
+  console.log('date',bookedDate)
+
   let choice_one = document.getElementById('c1');
   let choice_one_value;
   let choice_two = document.getElementById('c2');
@@ -154,26 +141,19 @@ function Bookwalker() {
 
 }
 
-/*Distance slider */
-let distanceSlide = document.getElementById("distance");
-let distanceOutput = document.getElementById("distanceOutput");
-
 function slideShowValue() {
   distanceOutput.value = distanceSlide.value;
 }
 
 /*Function for removing characters from string */
+/*
 function remove_char_from_string(text, character) {
   text = text.replace(character, '');
   return text;
-}
+}*/
 
-let panel = document.getElementById('panel');
+
 panel.style.display = 'none';
-let UserIcon = document.getElementById('usr');
-UserIcon.addEventListener("mouseover", Show_panel);
-UserIcon.addEventListener("mouseout", Hide_panel);
-
 
 function Show_panel() {
   console.log("hovering");
@@ -211,7 +191,7 @@ $("#signup").click(function (e) {
   sign_up_validation();
 });
 
-$("#bday").datepicker();
+/*Signup new user */
 
 function sign_up_validation() {
   let Fname = $('#fname').val();
@@ -255,6 +235,7 @@ function sign_up_validation() {
   add_new_customer_to_db(UserName, Fname, Lname, Adress, Cellphone, Email);
 }
 
+/*Inserts new user to DB if all fields was successfully validated */
 function add_new_customer_to_db(username, fname, lname, adress, cellphone, email) {
   $.ajax({
     type: 'POST',
@@ -272,29 +253,46 @@ function add_new_customer_to_db(username, fname, lname, adress, cellphone, email
   });
 }
 
-function get_user_from_db(uname) {
-  $.ajax({
-    type: 'POST',
-    url: 'src/API/booking/getcustomer_XML.php',
-    data: {
-      customerID: encodeURIComponent(uname),
-    },
-    success: returned_user
-  });
+/*Login*/
+
+function get_user_from_db() {
+  unamevalue = unameinput.value;
+  if (unamevalue.match(/[A-Öa-ö]/) != null) {
+    $.ajax({
+      type: 'POST',
+      url: 'src/API/booking/getcustomer_XML.php',
+      data: {
+        customerID: encodeURIComponent(unamevalue),
+      },
+      success: returned_user_from_db
+    });
+  } else {
+    status_msg("User with that name does not exist or no user inputed");
+  }
 }
 
+
+/*AJAX SUCCESS FUNCTIONS */
+/*returns ok if a new user was insetrted to DB correctly */
 function customer_added_to_db(returnedData){
-  alert('signed up!');
+  console.log('signed up!');
   console.log(returnedData);
 }
 
+/*Loop returned data for userid and login user if user exist in database*/
 function returned_user_from_db(returnedData) {
   var resultset = returnedData.childNodes[0];
   for (let i = 0; i < resultset.childNodes.length; i++) {
     var customer = resultset.childNodes.item(i);
     if (customer.nodeName === "customer") {
       USERNAME = customer.attributes['id'].nodeValue;
-      //console.log(USERNAME);
+      console.log(USERNAME);
+      if(USERNAME === unamevalue){
+        console.log('username: ',USERNAME);
+        store_logedin_user(unamevalue);
+        active_user(unamevalue);
+        content_handler('userpage');
+      }
     }
   }
 }
