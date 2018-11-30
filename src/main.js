@@ -12,19 +12,19 @@ let UserIcon = document.getElementById('usr');
  * USERNAME - hold the account name of a user that exists in the database
  * unamevalue - holds the inputed username from login input
  */
- let USERNAME = '';
- let unamevalue = '';
+let USERNAME = '';
+let unamevalue = '';
 
- /*Adding event liisteners */
- loginbtn.addEventListener("click", get_user_from_db);
- BookWalker.addEventListener('click', Bookwalker);
- UserIcon.addEventListener("mouseover", Show_panel);
- UserIcon.addEventListener("mouseout", Hide_panel);
+/*Adding event liisteners */
+loginbtn.addEventListener("click", get_user_from_db);
+BookWalker.addEventListener('click', Bookwalker);
+UserIcon.addEventListener("mouseover", Show_panel);
+UserIcon.addEventListener("mouseout", Hide_panel);
 
 /*Error handeling */
 //TODO: fix working error handeling
 //TODO: make error handeling more generall and flexible
-function status_msg(err,jqXHR,textStatus,errorThrown) {
+function status_msg(err, jqXHR, textStatus, errorThrown) {
   let errorElem = document.getElementById('error');
   //unameinput.style.borderColor = "red";
   errorElem.innerHTML = err;
@@ -110,7 +110,7 @@ let bookedDate = $("#date").datepicker("getDate");
 function Bookwalker() {
   let WalkerName = document.getElementById('walkerName');
   let WalkDistance = document.getElementById('distance').value;
-  console.log('date',bookedDate)
+  console.log('date', bookedDate)
 
   let choice_one = document.getElementById('c1');
   let choice_one_value;
@@ -136,9 +136,7 @@ function Bookwalker() {
   }
 
   cart.innerHTML += "<li>" + WalkerName.value + " walk with:" + Choice + " for:" + WalkDistance + "km" + "</li>";
-  error.innerHTML = '';
   BookWalker.style.borderBottomColor = "green";
-
 }
 
 function slideShowValue() {
@@ -254,7 +252,6 @@ function add_new_customer_to_db(username, fname, lname, adress, cellphone, email
 }
 
 /*Login*/
-
 function get_user_from_db() {
   unamevalue = unameinput.value;
   if (unamevalue.match(/[A-Öa-ö]/) != null) {
@@ -270,11 +267,39 @@ function get_user_from_db() {
     status_msg("User with that name does not exist or no user inputed");
   }
 }
+/*Get resource from db */
+let SearchBtn = document.getElementById('searchbtn');
+SearchBtn.addEventListener('click', get_resource_from_db);
+
+
+function get_resource_from_db() {
+  let searchinput = document.getElementById('searchWalker');
+  let searchvalue = searchinput.value;
+  let resName = 'kalle';
+  let resType = 'walkbook';
+
+  if (searchvalue.match(/[A-Öa-ö]/) != null) {
+    $.ajax({
+      type: 'POST',
+      url: 'src/API/booking/getresources_XML.php',
+      data: { //resID : encodeURIComponent(resID),
+        name: encodeURIComponent(resName),
+        //location:  encodeURIComponent(reslocation),
+        //company: encodeURIComponent(rescompany),
+        //fulltext: encodeURIComponent(resfulltext),
+        type: encodeURIComponent(resType)
+      },
+      success: returned_resources_from_db
+    });
+  } else {
+    status_msg("No resources found");
+  }
+}
 
 
 /*AJAX SUCCESS FUNCTIONS */
 /*returns ok if a new user was insetrted to DB correctly */
-function customer_added_to_db(returnedData){
+function customer_added_to_db(returnedData) {
   console.log('signed up!');
   console.log(returnedData);
 }
@@ -287,12 +312,25 @@ function returned_user_from_db(returnedData) {
     if (customer.nodeName === "customer") {
       USERNAME = customer.attributes['id'].nodeValue;
       console.log(USERNAME);
-      if(USERNAME === unamevalue){
-        console.log('username: ',USERNAME);
+      if (USERNAME === unamevalue) {
+        console.log('username: ', USERNAME);
         store_logedin_user(unamevalue);
         active_user(unamevalue);
         content_handler('userpage');
       }
+    }
+  }
+}
+
+/*Loop through returned resources retrieved from DB and present them in a list */
+function returned_resources_from_db(returnedData) {
+  let SearchResList = document.getElementById('SearchResList');
+
+  var resultset=returnedData.childNodes[0];
+  for (i = 0; i < resultset.childNodes.length; i++) {
+    if (resultset.childNodes.item(i).nodeName == "resource") {
+      var resource = resultset.childNodes.item(i);
+      SearchResList.innerHTML += "<li>" + resource.attributes['id'].nodeValue + "</li><button>Book</button>";
     }
   }
 }

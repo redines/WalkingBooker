@@ -3,13 +3,19 @@
     padding:0;
 }
 
-/*TODO: add scrollbar and better placement for list with bookings*/
+/*General style*/
+ul{
+    list-style: none;
+}
+
 /*Grid layout*/
 .container{
     display:grid;
     grid-template-rows: 1fr;
     grid-template-columns: 1fr 1fr 1fr;
     background-color: #dfdfdf;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .top-nav{
@@ -19,6 +25,7 @@
 }
 
 #usr{
+    margin-left: 5%;
     width:10%;
     height: 20%;
 }
@@ -42,25 +49,34 @@
     grid-area: 2/2 / 2/2;
 }
 
+/*Style search form*/
 #searchPage{
-    grid-column: 3/3;
+    grid-area: 1/3 / 1/span 3;
+    
 }
 
+#searchForm{
+    justify-content: center;
+}
+
+/*Style booking form*/
 #bookform{
-    grid-column: 2/2;
+    grid-area: 1/2 / 1/span 2;
 }
 
+#welcomemsg{
+    margin:5px 0 5px 0;
+}
+
+/*Style list of booked walker*/
 #bookings{
-    grid-column: 1/1;
-    width: 50%;
+    margin-top:5px;
+    grid-area: 1/1 / 1/span 2;
+    width: 40%;
 }
 
 #bookings h3{
  border-bottom: 2px solid black;
-}
-
-ul{
-    list-style: none;
 }
 
 #bookings li{
@@ -70,7 +86,12 @@ ul{
     border:2px gray solid;
 }
 
-/*Style Login Form*/
+#booked{
+    overflow: auto;
+    height:500px;
+}
+
+/*Style signup Form*/
 input {
     padding: 12px 20px;
     margin: 8px 0;
