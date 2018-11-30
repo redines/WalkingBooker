@@ -17,7 +17,7 @@ let unamevalue = '';
 
 /*Adding event liisteners */
 loginbtn.addEventListener("click", get_user_from_db);
-BookWalker.addEventListener('click', Bookwalker);
+//BookWalker.addEventListener('click', Bookwalker);
 UserIcon.addEventListener("mouseover", Show_panel);
 UserIcon.addEventListener("mouseout", Hide_panel);
 
@@ -70,6 +70,7 @@ function check_stored_user() {
   if (localStorage.getItem('user') != null) {
     content_handler('userpage');
     active_user(localStorage.getItem('user'));
+    USERNAME = localStorage.getItem('user');
   }
   else {
     content_handler('logindiv');
@@ -118,7 +119,6 @@ function Bookwalker() {
   let choice_two_value;
   let choice_three = document.getElementById('c3');
   let choice_three_value;
-  let cart = document.getElementById("cart");
   let Choice;
 
   if (choice_one.checked) {
@@ -135,7 +135,7 @@ function Bookwalker() {
     Choice = choice_three_value;
   }
 
-  cart.innerHTML += "<li>" + WalkerName.value + " walk with:" + Choice + " for:" + WalkDistance + "km" + "</li>";
+
   BookWalker.style.borderBottomColor = "green";
 }
 
@@ -154,14 +154,14 @@ function remove_char_from_string(text, character) {
 panel.style.display = 'none';
 
 function Show_panel() {
-  console.log("hovering");
+  //console.log("hovering");
   let y_pos = 35;
   panel.style.display = 'block';
   panel.style.top = y_pos + 'px';
 }
 
 function Hide_panel() {
-  console.log("Not hovering");
+  //console.log("Not hovering");
   panel.style.display = 'none';
 }
 
@@ -267,6 +267,50 @@ function get_user_from_db() {
     status_msg("User with that name does not exist or no user inputed");
   }
 }
+
+let getbok = document.getElementById('getbook');
+getbok.addEventListener('click',book_resource);
+
+/*Book resource*/
+function book_resource() {
+  let resID = 'a17pong';
+  let date = '2012-10-02';
+  let dateto = '2012-10-03';
+  let custID = USERNAME;
+  
+  $.ajax({
+    type: 'POST',
+    url: 'src/API/booking/makebooking_XML.php',
+    data: {
+      resourceID: resID,
+      date: date,
+      dateto: dateto,
+      customerID: custID
+    },
+    success: book_resource
+  });
+}
+
+let getbook = document.getElementById('Bookd');
+getbook.addEventListener('click', get_bookings);
+/*Book resource*/
+function get_bookings() {
+  let bokType = 'walkbook';
+  let date = 'a17pong';
+  
+  $.ajax({
+    type: 'POST',
+    url: 'src/API/booking/makebooking_XML.php',
+    data: {
+      type: bokType,
+      resourceID: date,
+    },
+    success: booked_resources_by_user
+  });
+}
+
+
+
 /*Get resource from db */
 let SearchBtn = document.getElementById('searchbtn');
 SearchBtn.addEventListener('click', get_resource_from_db);
@@ -275,25 +319,28 @@ SearchBtn.addEventListener('click', get_resource_from_db);
 function get_resource_from_db() {
   let searchinput = document.getElementById('searchWalker');
   let searchvalue = searchinput.value;
-  let resName = 'kalle';
+  let searchComp = document.getElementById('searchWalkerComp');
+  let searchCompval = searchComp.value;
+
+  //let resName = 'kalle';
   let resType = 'walkbook';
 
-  if (searchvalue.match(/[A-Öa-ö]/) != null) {
-    $.ajax({
-      type: 'POST',
-      url: 'src/API/booking/getresources_XML.php',
-      data: { //resID : encodeURIComponent(resID),
-        name: encodeURIComponent(resName),
-        //location:  encodeURIComponent(reslocation),
-        //company: encodeURIComponent(rescompany),
-        //fulltext: encodeURIComponent(resfulltext),
-        type: encodeURIComponent(resType)
-      },
-      success: returned_resources_from_db
-    });
-  } else {
-    status_msg("No resources found");
-  }
+  //if (searchvalue.match(/[A-Öa-ö]/) != null) {
+  $.ajax({
+    type: 'POST',
+    url: 'src/API/booking/getresources_XML.php',
+    data: { //resID : encodeURIComponent(resID),
+      name: encodeURIComponent(searchvalue),
+      //location:  encodeURIComponent(reslocation),
+      company: encodeURIComponent(searchCompval),
+      //fulltext: encodeURIComponent(resfulltext),
+      type: encodeURIComponent(resType)
+    },
+    success: returned_resources_from_db
+  });
+  //} else {
+  //status_msg("No resources found");
+  //}
 }
 
 
@@ -302,6 +349,17 @@ function get_resource_from_db() {
 function customer_added_to_db(returnedData) {
   console.log('signed up!');
   console.log(returnedData);
+}
+
+
+function book_resource(returnedData) {
+ console.log("Booked: ",returnedData);
+}
+
+/*Returns and prints all bookings made by loggedin user */
+function booked_resources_by_user(returnedData){
+  let cart = document.getElementById("cart");
+  cart.innerHTML += "<li>" + returnedData + "</li>";
 }
 
 /*Loop returned data for userid and login user if user exist in database*/
@@ -325,12 +383,14 @@ function returned_user_from_db(returnedData) {
 /*Loop through returned resources retrieved from DB and present them in a list */
 function returned_resources_from_db(returnedData) {
   let SearchResList = document.getElementById('SearchResList');
-
-  var resultset=returnedData.childNodes[0];
+  let bookBtn = document.getElementById('bookbtn');
+  bookBtn.addEventListener('click', book_resource);
+  var resultset = returnedData.childNodes[0];
   for (i = 0; i < resultset.childNodes.length; i++) {
     if (resultset.childNodes.item(i).nodeName == "resource") {
       var resource = resultset.childNodes.item(i);
-      SearchResList.innerHTML += "<li>" + resource.attributes['id'].nodeValue + "</li><button>Book</button>";
+      SearchResList.innerHTML += "<li>" + resource.attributes['name'].nodeValue +
+        " walks with:" + resource.attributes['company'].nodeValue + "</li>";
     }
   }
 }
