@@ -1,12 +1,21 @@
 /*GLOBAL HTML REFERENCE VARIABLES */
 let unameinput = document.getElementById("uname");
 let loginbtn = document.getElementById("loginbtn");
-let BookWalker = document.getElementById('Book');
+let BookBtn = document.getElementById('Bookbtn');
 let distanceSlide = document.getElementById("distance");
 let distanceOutput = document.getElementById("distanceOutput");
 let panel = document.getElementById('panel');
 let UserIcon = document.getElementById('usr');
+let SearchBtn = document.getElementById('searchbtn');
 
+$("#datefrom").datepicker({
+  dateFormat: "yy-mm-dd",
+  minDate : 0,
+});
+$("#dateto").datepicker({
+  dateFormat: "yy-mm-dd",
+  minDate : 0,
+});
 /*
  * GLOBAL VARIABLES:
  * USERNAME - hold the account name of a user that exists in the database
@@ -15,20 +24,20 @@ let UserIcon = document.getElementById('usr');
 let USERNAME = '';
 let unamevalue = '';
 
+
 /*Adding event liisteners */
 loginbtn.addEventListener("click", get_user_from_db);
-//BookWalker.addEventListener('click', Bookwalker);
 UserIcon.addEventListener("mouseover", Show_panel);
 UserIcon.addEventListener("mouseout", Hide_panel);
+SearchBtn.addEventListener('click', search_resource_in_db);
+BookBtn.addEventListener('click',BookWalker);
 
 /*Error handeling */
-//TODO: fix working error handeling
-//TODO: make error handeling more generall and flexible
 function status_msg(err, jqXHR, textStatus, errorThrown) {
   let errorElem = document.getElementById('error');
   //unameinput.style.borderColor = "red";
   errorElem.innerHTML = err;
-  console.log(jqXHR);
+  //console.log(jqXHR);
   //status_msg("Please fill out form");
   //alert("AJAX Error:\n"+errorThrown);
 }
@@ -71,6 +80,7 @@ function check_stored_user() {
     content_handler('userpage');
     active_user(localStorage.getItem('user'));
     USERNAME = localStorage.getItem('user');
+    get_resources_booked_by_customer();
   }
   else {
     content_handler('logindiv');
@@ -103,15 +113,18 @@ function active_user(activeUser) {
   WelcomeElem.innerHTML = welcomemsg;
 }
 
-/*Book walker form*/
-$("#date").datepicker();
-let bookedDate = $("#date").datepicker("getDate");
 
 //Function to be able to book a walker
-function Bookwalker() {
+function BookWalker() {
   let WalkerName = document.getElementById('walkerName');
   let WalkDistance = document.getElementById('distance').value;
-  console.log('date', bookedDate)
+
+    let datefrom = $("#datefrom").datepicker("getDate");
+    let dateto = $("#dateto").datepicker("getDate");
+
+    let goodDate = check_date(dateto,datefrom);
+    //console.log("gooddate: ", goodDate);
+
 
   let choice_one = document.getElementById('c1');
   let choice_one_value;
@@ -120,6 +133,7 @@ function Bookwalker() {
   let choice_three = document.getElementById('c3');
   let choice_three_value;
   let Choice;
+  //let Choice;
 
   if (choice_one.checked) {
     choice_one_value = choice_one.value;
@@ -136,7 +150,27 @@ function Bookwalker() {
   }
 
 
-  BookWalker.style.borderBottomColor = "green";
+ if(goodDate && Choice != null){
+  book_resource(dateto,datefrom,Choice);
+  BookBtn.style.color = "green";
+ }
+
+}
+
+function check_date(dateto,datefrom){
+  if(datefrom != null || dateto != null){
+    if(datefrom > dateto){
+      console.log("this is not ok");
+      return false;
+    }else{
+      console.log('datefrom', datefrom);
+      console.log('dateto', dateto);
+      return true;
+    }
+  }else{
+    console.log("please enter value");
+    return false;
+  }
 }
 
 function slideShowValue() {
@@ -190,7 +224,9 @@ $("#signup").click(function (e) {
 });
 
 /*Signup new user */
-
+/**
+ * TODO: Fix validation
+ */
 function sign_up_validation() {
   let Fname = $('#fname').val();
   let Lname = $('#lname').val();
@@ -247,7 +283,7 @@ function add_new_customer_to_db(username, fname, lname, adress, cellphone, email
       auxdata: encodeURIComponent(cellphone)
     },
     success: customer_added_to_db,
-    error: errormsg
+    error: status_msg
   });
 }
 
@@ -261,105 +297,105 @@ function get_user_from_db() {
       data: {
         customerID: encodeURIComponent(unamevalue),
       },
-      success: returned_user_from_db
+      success: returned_user_from_db,
+      error: status_msg
     });
   } else {
     status_msg("User with that name does not exist or no user inputed");
   }
 }
 
-let getbok = document.getElementById('getbook');
-getbok.addEventListener('click',book_resource);
 
 /*Book resource*/
-function book_resource() {
-  let resID = 'a17pong';
-  let date = '2012-10-02';
-  let dateto = '2012-10-03';
+function book_resource(dateto,datefrom,choice) {
   let custID = USERNAME;
+  console.log(dateto,datefrom,choice,custID);
   
   $.ajax({
     type: 'POST',
     url: 'src/API/booking/makebooking_XML.php',
     data: {
-      resourceID: resID,
-      date: date,
-      dateto: dateto,
-      customerID: custID
+      resourceID: encodeURIComponent(choice),
+      date: encodeURIComponent(dateto),
+      dateto: encodeURIComponent(datefrom),
+      customerID: encodeURIComponent(custID)
     },
-    success: book_resource
+    success: book_resource_success,
+    error: status_msg
   });
 }
 
-let getbook = document.getElementById('Bookd');
-getbook.addEventListener('click', get_bookings);
+
 /*Book resource*/
-function get_bookings() {
-  let bokType = 'walkbook';
-  let date = 'a17pong';
+function get_resources_booked_by_customer() {
+  let applikation = 'walkbook';
+  let customer = USERNAME;
   
   $.ajax({
     type: 'POST',
-    url: 'src/API/booking/makebooking_XML.php',
+    url: 'src/API/booking/getcustomerbookings_XML.php',
     data: {
-      type: bokType,
-      resourceID: date,
+      type: applikation,
+      customerID: customer,
     },
-    success: booked_resources_by_user
+    success: booked_resources_by_user,
+    error: status_msg
   });
 }
 
 
 
-/*Get resource from db */
-let SearchBtn = document.getElementById('searchbtn');
-SearchBtn.addEventListener('click', get_resource_from_db);
+/*Search for resource in db */
+function search_resource_in_db() {
+  let SearchWalker = document.getElementById('SearchWalker').value;
 
-
-function get_resource_from_db() {
-  let searchinput = document.getElementById('searchWalker');
-  let searchvalue = searchinput.value;
-  let searchComp = document.getElementById('searchWalkerComp');
-  let searchCompval = searchComp.value;
-
-  //let resName = 'kalle';
   let resType = 'walkbook';
 
-  //if (searchvalue.match(/[A-Öa-ö]/) != null) {
+  if (SearchWalker.match(/[A-Öa-ö]/) != null) {
   $.ajax({
     type: 'POST',
     url: 'src/API/booking/getresources_XML.php',
     data: { //resID : encodeURIComponent(resID),
-      name: encodeURIComponent(searchvalue),
+      //name: encodeURIComponent(searchvalue),
       //location:  encodeURIComponent(reslocation),
-      company: encodeURIComponent(searchCompval),
+      company: encodeURIComponent(SearchWalker),
       //fulltext: encodeURIComponent(resfulltext),
       type: encodeURIComponent(resType)
     },
-    success: returned_resources_from_db
+    success: returned_resources_from_db,
+    error: status_msg
   });
-  //} else {
-  //status_msg("No resources found");
-  //}
+  } else {
+    status_msg("Not valid input");
+  }
 }
 
 
 /*AJAX SUCCESS FUNCTIONS */
-/*returns ok if a new user was insetrted to DB correctly */
-function customer_added_to_db(returnedData) {
-  console.log('signed up!');
-  console.log(returnedData);
+/*returns ok if a new user was insetrted to DB correctly, add message to show taht customer was added correctly */
+function customer_added_to_db() {
+  status_msg("User successfully added!");
+  //console.log('signed up!');
+  //console.log(returnedData);
 }
 
 
-function book_resource(returnedData) {
+function book_resource_success(returnedData) {
+  status_msg("Booked resource");
  console.log("Booked: ",returnedData);
 }
 
 /*Returns and prints all bookings made by loggedin user */
 function booked_resources_by_user(returnedData){
-  let cart = document.getElementById("cart");
-  cart.innerHTML += "<li>" + returnedData + "</li>";
+  let bookedgByUser = document.getElementById("cart");
+  var resultset = returnedData.childNodes[0];
+  for (let i = 0; i < resultset.childNodes.length; i++) {
+    var bokings = resultset.childNodes.item(i);
+    if (bokings.nodeName == "booking") {
+      var booked = resultset.childNodes.item(i);
+      bookedgByUser.innerHTML += "<li>" + booked.attributes['company'].nodeValue  + "</li>";
+    }
+  }
 }
 
 /*Loop returned data for userid and login user if user exist in database*/
@@ -371,7 +407,7 @@ function returned_user_from_db(returnedData) {
       USERNAME = customer.attributes['id'].nodeValue;
       console.log(USERNAME);
       if (USERNAME === unamevalue) {
-        console.log('username: ', USERNAME);
+        //console.log('username: ', USERNAME);
         store_logedin_user(unamevalue);
         active_user(unamevalue);
         content_handler('userpage');
@@ -380,17 +416,22 @@ function returned_user_from_db(returnedData) {
   }
 }
 
-/*Loop through returned resources retrieved from DB and present them in a list */
+/*Loop through returned resources retrieved from DB and calls funktion to list them on page */
 function returned_resources_from_db(returnedData) {
-  let SearchResList = document.getElementById('SearchResList');
-  let bookBtn = document.getElementById('bookbtn');
-  bookBtn.addEventListener('click', book_resource);
   var resultset = returnedData.childNodes[0];
   for (i = 0; i < resultset.childNodes.length; i++) {
     if (resultset.childNodes.item(i).nodeName == "resource") {
       var resource = resultset.childNodes.item(i);
-      SearchResList.innerHTML += "<li>" + resource.attributes['name'].nodeValue +
-        " walks with:" + resource.attributes['company'].nodeValue + "</li>";
+      list_resource_from_db(resource);
+    } else{
+      console.log("No resource found");
     }
   }
+}
+
+function list_resource_from_db(resource){
+  let SearchResList = document.getElementById('SearchResList');
+  
+  SearchResList.innerHTML += "<li>" + resource.attributes['name'].nodeValue +
+  " walks with:" + resource.attributes['company'].nodeValue + "</li>";
 }

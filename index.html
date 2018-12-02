@@ -52,20 +52,19 @@
             <div class="container">
                 <div id="bookform" class="form">
                     <h2 id="welcomemsg"></h2>
-                    <input id="walkerName" type="text" placeholder="Name of walker to book">
-                    <div>Distance:<input oninput="slideShowValue()" id="distance" type="range" min="1" max="10">
-                        <output name="distanceOutput" id="distanceOutput">0</output></div>
-                    <div>
                         <h3>Choose what you want the walker to walk with</h3>
                         <span>
                             <label><input id="c1" type="radio" name="choice" value="pokemonGO">Pokemon GO</label>
                             <label><input id="c2" type="radio" name="choice" value="friend">A friend</label>
                             <label><input id="c3" type="radio" name="choice" value="dog">My dogs</label>
                         </span>
+                        <div>Distance:<input oninput="slideShowValue()" id="distance" type="range" min="1" max="10">
+                            <output name="distanceOutput" id="distanceOutput">0</output></div>
+                        <div>
                     </div>
-                    <div><label>Which day?<input type="text" id="date"></label></div>
-                    <button id="Bookd">Book walker</button>
-                    <button id="getbook">Get bookings</button>
+                    <div><label>From:<input type="text" id="datefrom"></label></div>
+                    <div><label>To:<input type="text" id="dateto"></label></div>
+                    <button type="button" id="Bookbtn">Book walker</button>
                 </div>
                 <div id="bookings">
                     <h3>Booked walker</h3>
@@ -77,8 +76,7 @@
                 </div>
                 <div id="searchPage">
                     <div id="searchForm">
-                        <input id="searchWalker" type="search" placeholder="Search by name">
-                        <input id="searchWalkerComp" type="search" placeholder="Search by type of walk">
+                        <input id="SearchWalker" type="search" placeholder="Search by type of walk">
                         <button id="searchbtn" type="button">Search</button>
                         <div id="searchResult">
                             <ul id="SearchResList">
