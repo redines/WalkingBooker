@@ -101,6 +101,7 @@ function store_logedin_user(activeUser) {
 /*Logout and remove user from localstorage*/
 function logout() {
   localStorage.removeItem('user');
+  USERNAME = '';
   content_handler('logindiv');
 }
 
@@ -119,9 +120,11 @@ function BookWalker() {
   let WalkerName = document.getElementById('walkerName');
   let WalkDistance = document.getElementById('distance').value;
 
-    let datefrom = $("#datefrom").datepicker("getDate");
-    let dateto = $("#dateto").datepicker("getDate");
+    let datefrom = $("#datefrom").val();
+    let dateto = $("#dateto").val();
 
+    //alert(datefrom);
+    //console.log("from: ",datefrom,"to:",dateto);
     let goodDate = check_date(dateto,datefrom);
     //console.log("gooddate: ", goodDate);
 
@@ -154,7 +157,6 @@ function BookWalker() {
   book_resource(dateto,datefrom,Choice);
   BookBtn.style.color = "green";
  }
-
 }
 
 function check_date(dateto,datefrom){
@@ -318,7 +320,8 @@ function book_resource(dateto,datefrom,choice) {
       resourceID: encodeURIComponent(choice),
       date: encodeURIComponent(dateto),
       dateto: encodeURIComponent(datefrom),
-      customerID: encodeURIComponent(custID)
+      customerID: encodeURIComponent(custID),
+      status: '2'
     },
     success: book_resource_success,
     error: status_msg
@@ -358,8 +361,8 @@ function search_resource_in_db() {
     data: { //resID : encodeURIComponent(resID),
       //name: encodeURIComponent(searchvalue),
       //location:  encodeURIComponent(reslocation),
-      company: encodeURIComponent(SearchWalker),
-      //fulltext: encodeURIComponent(resfulltext),
+      //company: encodeURIComponent(SearchWalker),
+      fulltext: encodeURIComponent(SearchWalker),
       type: encodeURIComponent(resType)
     },
     success: returned_resources_from_db,
@@ -432,6 +435,18 @@ function returned_resources_from_db(returnedData) {
 function list_resource_from_db(resource){
   let SearchResList = document.getElementById('SearchResList');
   
-  SearchResList.innerHTML += "<li>" + resource.attributes['name'].nodeValue +
-  " walks with:" + resource.attributes['company'].nodeValue + "</li>";
+  SearchResList.innerHTML += "<li class='dropdown'>" + resource.attributes['name'].nodeValue +
+  " walks with:" + resource.attributes['category'].nodeValue + "</li>";
+
+
+  SearchResList.innerHTML += "<li><button class='accordion'>Section 1</button><div class='panel'><p>Lorem ipsum dolor</p></div></li>";
+
 }
+
+$('.accordion').click(function(e){
+  var target = $( e.target );
+  console.log(target);
+  if(target.is( "button" )){
+    target.find('div').slideToggle();
+  }
+});
