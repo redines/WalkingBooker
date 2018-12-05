@@ -1,21 +1,14 @@
 /*GLOBAL HTML REFERENCE VARIABLES */
 let unameinput = document.getElementById("uname");
 let loginbtn = document.getElementById("loginbtn");
-let BookBtn = document.getElementById('Bookbtn');
 let distanceSlide = document.getElementById("distance");
 let distanceOutput = document.getElementById("distanceOutput");
 let panel = document.getElementById('panel');
 let UserIcon = document.getElementById('usr');
 let SearchBtn = document.getElementById('searchbtn');
+let bookedgByUser = document.getElementById("cart");
 
-$("#datefrom").datepicker({
-  dateFormat: "yy-mm-dd",
-  minDate : 0,
-});
-$("#dateto").datepicker({
-  dateFormat: "yy-mm-dd",
-  minDate : 0,
-});
+
 /*
  * GLOBAL VARIABLES:
  * USERNAME - hold the account name of a user that exists in the database
@@ -23,6 +16,8 @@ $("#dateto").datepicker({
  */
 let USERNAME = '';
 let unamevalue = '';
+let WalkersArray = [];
+let BookedWalkersArray = [];
 
 
 /*Adding event liisteners */
@@ -30,13 +25,23 @@ loginbtn.addEventListener("click", get_user_from_db);
 UserIcon.addEventListener("mouseover", Show_panel);
 UserIcon.addEventListener("mouseout", Hide_panel);
 SearchBtn.addEventListener('click', search_resource_in_db);
-BookBtn.addEventListener('click',BookWalker);
+document.getElementById('SearchWalker').addEventListener('keypress', function (e) {
+  var key = e.which || e.keyCode;
+  if (key === 13) {
+    search_resource_in_db();
+  }
+});
 
 /*Error handeling */
 function status_msg(err, jqXHR, textStatus, errorThrown) {
   let errorElem = document.getElementById('error');
-  //unameinput.style.borderColor = "red";
-  errorElem.innerHTML = err;
+
+  if(err != null){
+    errorElem.innerHTML = err;
+  }else{
+    errorElem.innerHTML = " ";
+  }
+  
   //console.log(jqXHR);
   //status_msg("Please fill out form");
   //alert("AJAX Error:\n"+errorThrown);
@@ -62,13 +67,14 @@ function content_handler(content) {
     UserPage.style.display = "none";
     LogOutBtn.style.display = 'none';
     Usr.style.display = "none";
-
+    status_msg("");
   } else if (content === 'userpage') {
     document.getElementById('signUpdiv').style.display = 'none';
     loginform.style.display = "none";
     UserPage.style.display = "block";
     LogOutBtn.style.display = 'block';
     Usr.style.display = "block";
+    status_msg("");
   }
 }
 
@@ -80,7 +86,7 @@ function check_stored_user() {
     content_handler('userpage');
     active_user(localStorage.getItem('user'));
     USERNAME = localStorage.getItem('user');
-    get_resources_booked_by_customer();
+    get_resources_booked_by_customer(USERNAME);
   }
   else {
     content_handler('logindiv');
@@ -103,6 +109,7 @@ function logout() {
   localStorage.removeItem('user');
   USERNAME = '';
   content_handler('logindiv');
+  bookedgByUser.innerHTML = "";
 }
 
 /*Function for showin a welcome message for active user */
@@ -116,29 +123,27 @@ function active_user(activeUser) {
 
 
 //Function to be able to book a walker
-function BookWalker() {
-  let WalkerName = document.getElementById('walkerName');
-  let WalkDistance = document.getElementById('distance').value;
+function BookWalker(WalkerToBook) {
+  //console.log("entered book walker");
 
-    let datefrom = $("#datefrom").val();
-    let dateto = $("#dateto").val();
-
-    //alert(datefrom);
-    //console.log("from: ",datefrom,"to:",dateto);
-    let goodDate = check_date(dateto,datefrom);
-    //console.log("gooddate: ", goodDate);
-
-
+  let datefrom = $(".datefrom").val();
+  let dateto = $(".dateto").val();
+  let goodDate = check_date(dateto,datefrom);
+  //let WalkDistance = document.getElementById('distance').value;
+  /*
   let choice_one = document.getElementById('c1');
   let choice_one_value;
   let choice_two = document.getElementById('c2');
   let choice_two_value;
   let choice_three = document.getElementById('c3');
   let choice_three_value;
-  let Choice;
+  let Choice;*/
   //let Choice;
+  
+  console.log("walker to book:",WalkerToBook)
+  console.log("from: ",datefrom,"to:",dateto);
 
-  if (choice_one.checked) {
+  /*if (choice_one.checked) {
     choice_one_value = choice_one.value;
     console.log("choice: ", choice_one_value);
     Choice = choice_one_value;
@@ -150,12 +155,12 @@ function BookWalker() {
     choice_three_value = choice_three.value;
     console.log("choice: ", choice_three_value);
     Choice = choice_three_value;
-  }
+  }*/
 
-
- if(goodDate && Choice != null){
-  book_resource(dateto,datefrom,Choice);
-  BookBtn.style.color = "green";
+ if(goodDate){
+  book_resource(dateto,datefrom,WalkerToBook);
+ }else{
+   status_msg("Please choose a different date");
  }
 }
 
@@ -185,6 +190,7 @@ function remove_char_from_string(text, character) {
   text = text.replace(character, '');
   return text;
 }*/
+
 
 
 panel.style.display = 'none';
@@ -309,15 +315,15 @@ function get_user_from_db() {
 
 
 /*Book resource*/
-function book_resource(dateto,datefrom,choice) {
+function book_resource(dateto,datefrom,resid) {
   let custID = USERNAME;
-  console.log(dateto,datefrom,choice,custID);
+  console.log(dateto,datefrom,resid,custID);
   
   $.ajax({
     type: 'POST',
     url: 'src/API/booking/makebooking_XML.php',
     data: {
-      resourceID: encodeURIComponent(choice),
+      resourceID: encodeURIComponent(resid),
       date: encodeURIComponent(dateto),
       dateto: encodeURIComponent(datefrom),
       customerID: encodeURIComponent(custID),
@@ -330,9 +336,9 @@ function book_resource(dateto,datefrom,choice) {
 
 
 /*Book resource*/
-function get_resources_booked_by_customer() {
+function get_resources_booked_by_customer(customer) {
   let applikation = 'walkbook';
-  let customer = USERNAME;
+  //let customer = USERNAME;
   
   $.ajax({
     type: 'POST',
@@ -385,18 +391,19 @@ function customer_added_to_db() {
 
 function book_resource_success(returnedData) {
   status_msg("Booked resource");
- console.log("Booked: ",returnedData);
+ //console.log("Booked: ",returnedData);
+  get_resources_booked_by_customer();
 }
 
 /*Returns and prints all bookings made by loggedin user */
 function booked_resources_by_user(returnedData){
-  let bookedgByUser = document.getElementById("cart");
+  
   var resultset = returnedData.childNodes[0];
   for (let i = 0; i < resultset.childNodes.length; i++) {
     var bokings = resultset.childNodes.item(i);
     if (bokings.nodeName == "booking") {
       var booked = resultset.childNodes.item(i);
-      bookedgByUser.innerHTML += "<li>" + booked.attributes['company'].nodeValue  + "</li>";
+        bookedgByUser.innerHTML += "<li>" + booked.attributes['company'].nodeValue  + "</li>";
     }
   }
 }
@@ -414,39 +421,86 @@ function returned_user_from_db(returnedData) {
         store_logedin_user(unamevalue);
         active_user(unamevalue);
         content_handler('userpage');
+        get_resources_booked_by_customer(USERNAME);
       }
+    }else{
+      status_msg("User do not exist, please sign up!");
     }
   }
 }
 
 /*Loop through returned resources retrieved from DB and calls funktion to list them on page */
 function returned_resources_from_db(returnedData) {
+  WalkersArray =[];
   var resultset = returnedData.childNodes[0];
+  let name,category;
+
   for (i = 0; i < resultset.childNodes.length; i++) {
     if (resultset.childNodes.item(i).nodeName == "resource") {
       var resource = resultset.childNodes.item(i);
-      list_resource_from_db(resource);
+      name = resource.attributes['name'].nodeValue;
+      category = resource.attributes['category'].nodeValue;
+      WalkersArray.push({name:name,category:category})
     } else{
-      console.log("No resource found");
+      status_msg("No resources found");
     }
   }
+  list_resource_from_db();
 }
 
-function list_resource_from_db(resource){
-  let SearchResList = document.getElementById('SearchResList');
-  
-  SearchResList.innerHTML += "<li class='dropdown'>" + resource.attributes['name'].nodeValue +
-  " walks with:" + resource.attributes['category'].nodeValue + "</li>";
+/*TODO: Implementera array för att kunna tömma/lägga till/sortera */
+function list_resource_from_db(){
+  sort_search_result('up');
 
-
-  SearchResList.innerHTML += "<li><button class='accordion'>Section 1</button><div class='panel'><p>Lorem ipsum dolor</p></div></li>";
-
-}
-
-$('.accordion').click(function(e){
-  var target = $( e.target );
-  console.log(target);
-  if(target.is( "button" )){
-    target.find('div').slideToggle();
+  $('.accordion').click(function(){
+    let walker = $(this).text();
+    console.log(walker);
+    $(this).siblings().slideToggle('slow');
+    let BookBtn = document.getElementById('Bookbtn');
+    BookBtn.addEventListener('click',function(){
+      BookWalker(walker);
+    });
+    $(".datefrom").datepicker({
+      dateFormat: "yy-mm-dd",
+      minDate : 0,
+    });
+    $(".dateto").datepicker({
+      dateFormat: "yy-mm-dd",
+      minDate : 0,
+    });
   }
+  );
+}
+
+$("#sortup").click(function(e){
+  sort_search_result("up");
 });
+
+$("#sortdown").click(function(e){
+  sort_search_result("down");
+});
+
+function sort_search_result(SortType){
+  let SortedSearch="";
+  let SearchResList = document.getElementById('SearchResList');
+  SearchResList.innerHTML = "";
+  //console.log(WalkersArray);
+ 
+  // Sort
+  if(SortType=="up"){
+    WalkersArray.sort(function(nameOne, nameTwo){return nameOne.name>nameTwo.name});
+  }else if(SortType=="down"){
+    WalkersArray.sort(function(nameOne, nameTwo){return nameTwo.name>nameOne.name});          
+  }
+  
+  // Build table
+  for(i=0;i<WalkersArray.length;i++){
+    SortedSearch += "<li><button class='accordion'>" + WalkersArray[i].name +
+                    "</button><div class='bokpanel hidebokpanel'>"+ WalkersArray[i].category+
+                    "<div><label>From:<input type='text' class='datefrom'></label></div>"+
+                    "<div><label>To:<input type='text' class='dateto'></label></div>"+
+                    "<button type='button' id='Bookbtn'>Book walker</button></div></li>";              
+  }
+
+  SearchResList.innerHTML=SortedSearch;
+}
