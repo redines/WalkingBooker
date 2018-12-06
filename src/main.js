@@ -9,6 +9,7 @@ let SearchBtn = document.getElementById('searchbtn');
 let bookedgByUser = document.getElementById("cart");
 
 
+
 /*
  * GLOBAL VARIABLES:
  * USERNAME - hold the account name of a user that exists in the database
@@ -25,23 +26,18 @@ loginbtn.addEventListener("click", get_user_from_db);
 UserIcon.addEventListener("mouseover", Show_panel);
 UserIcon.addEventListener("mouseout", Hide_panel);
 SearchBtn.addEventListener('click', search_resource_in_db);
-document.getElementById('SearchWalker').addEventListener('keypress', function (e) {
-  var key = e.which || e.keyCode;
-  if (key === 13) {
-    search_resource_in_db();
-  }
-});
+
 
 /*Error handeling */
 function status_msg(err, jqXHR, textStatus, errorThrown) {
   let errorElem = document.getElementById('error');
 
-  if(err != null){
+  if (err != null) {
     errorElem.innerHTML = err;
-  }else{
+  } else {
     errorElem.innerHTML = " ";
   }
-  
+
   //console.log(jqXHR);
   //status_msg("Please fill out form");
   //alert("AJAX Error:\n"+errorThrown);
@@ -67,6 +63,7 @@ function content_handler(content) {
     UserPage.style.display = "none";
     LogOutBtn.style.display = 'none';
     Usr.style.display = "none";
+    document.getElementById('WalkerRegistration').style.display = 'none';
     status_msg("");
   } else if (content === 'userpage') {
     document.getElementById('signUpdiv').style.display = 'none';
@@ -75,6 +72,18 @@ function content_handler(content) {
     LogOutBtn.style.display = 'block';
     Usr.style.display = "block";
     status_msg("");
+    document.getElementById('SearchWalker').addEventListener('keypress', function (e) {
+      var key = e.which || e.keyCode;
+      if (key === 13) {
+        search_resource_in_db();
+      }
+    });
+  } else if (content === 'WalkerRegistration') {
+    document.getElementById('signUpdiv').style.display = 'none';
+    loginform.style.display = "none";
+    UserPage.style.display = "none";
+    LogOutBtn.style.display = 'block';
+    Usr.style.display = "block";
   }
 }
 
@@ -128,61 +137,39 @@ function BookWalker(WalkerToBook) {
 
   let datefrom = $(".datefrom").val();
   let dateto = $(".dateto").val();
-  let goodDate = check_date(dateto,datefrom);
+  let goodDate = check_date(dateto, datefrom);
   //let WalkDistance = document.getElementById('distance').value;
-  /*
-  let choice_one = document.getElementById('c1');
-  let choice_one_value;
-  let choice_two = document.getElementById('c2');
-  let choice_two_value;
-  let choice_three = document.getElementById('c3');
-  let choice_three_value;
-  let Choice;*/
-  //let Choice;
-  
-  console.log("walker to book:",WalkerToBook)
-  console.log("from: ",datefrom,"to:",dateto);
 
-  /*if (choice_one.checked) {
-    choice_one_value = choice_one.value;
-    console.log("choice: ", choice_one_value);
-    Choice = choice_one_value;
-  } else if (choice_two.checked) {
-    choice_two_value = choice_two.value;
-    console.log("choice: ", choice_two_value);
-    Choice = choice_two_value;
-  } else if (choice_three.checked) {
-    choice_three_value = choice_three.value;
-    console.log("choice: ", choice_three_value);
-    Choice = choice_three_value;
-  }*/
+  //console.log("walker to book:",WalkerToBook)
+  //console.log("from: ",datefrom,"to:",dateto);
 
- if(goodDate){
-  book_resource(dateto,datefrom,WalkerToBook);
- }else{
-   status_msg("Please choose a different date");
- }
+  if (goodDate) {
+    book_resource(dateto, datefrom, WalkerToBook);
+  } else {
+    status_msg("Please choose a different date");
+  }
 }
 
-function check_date(dateto,datefrom){
-  if(datefrom != null || dateto != null){
-    if(datefrom > dateto){
+function check_date(dateto, datefrom) {
+  if (datefrom != null || dateto != null) {
+    if (datefrom > dateto) {
       console.log("this is not ok");
       return false;
-    }else{
+    } else {
       console.log('datefrom', datefrom);
       console.log('dateto', dateto);
       return true;
     }
-  }else{
+  } else {
     console.log("please enter value");
     return false;
   }
 }
 
+/*
 function slideShowValue() {
   distanceOutput.value = distanceSlide.value;
-}
+}*/
 
 /*Function for removing characters from string */
 /*
@@ -190,8 +177,6 @@ function remove_char_from_string(text, character) {
   text = text.replace(character, '');
   return text;
 }*/
-
-
 
 panel.style.display = 'none';
 
@@ -223,19 +208,16 @@ $("#cancel").click(function (e) {
 $("#bday").keyup(function (e) {
   let EnterKey = e.which;
   if (EnterKey === 13) {
-    sign_up_validation();
+    sign_up_new_user();
   }
 });
 
 $("#signup").click(function (e) {
-  sign_up_validation();
+  sign_up_new_user();
 });
 
 /*Signup new user */
-/**
- * TODO: Fix validation
- */
-function sign_up_validation() {
+function sign_up_new_user() {
   let Fname = $('#fname').val();
   let Lname = $('#lname').val();
   let Adress = $('#adress').val();
@@ -243,38 +225,52 @@ function sign_up_validation() {
   let Email = $('#email').val();
   let UserName = $('#usrname').val();
 
+  if (UserName == "" || Fname == "" || Lname == "" || Adress == "" || Cellphone == "" || Email == "") {
+    status_msg("there are empty fields, all information need to be sent to make an account!");
+  }
+  else if (sign_up_validation(UserName, Fname, Lname, Adress, Cellphone, Email)) {
+    add_new_customer_to_db(UserName, Fname, Lname, Adress, Cellphone, Email);
+  }
+}
+
+function sign_up_validation(UserName, Fname, Lname, Adress, Cellphone, Email) {
   if (UserName.match(/[A-Öa-ö]/) != null) {
     console.log("username ok:", UserName);
+    if (Fname.match(/[A-Öa-ö]/) != null) {
+      console.log("fname ok:", Fname);
+      if (Lname.match(/[A-Öa-ö]/) != null) {
+        console.log("lname ok:", Lname);
+        if (Adress.match(/[A-Öa-Ö]+\s+\d.+\d.+[A-Öa-ö]/) != null) {
+          console.log("Adress ok:", Adress);
+          if (Cellphone.match(/[0-9]+.*/) != null) {
+            console.log("Cellphone ok:", Cellphone);
+            if (Email.indexOf("@") == -1) {
+              status_msg("Email not ok, Missing @");
+              return false;
+            } else {
+              console.log("Email ok", Email)
+              return true;
+            }
+          } else {
+            status_msg("Not a correct cellphone number");
+            return false;
+          }
+        } else {
+          status_msg("Not a valid adress");
+          return false;
+        }
+      } else {
+        status_msg("Last name was not input correctly");
+        return false;
+      }
+    } else {
+      status_msg("First name was not input correctly");
+      return false;
+    }
   } else {
-    status_msg("First name was not input correctly");
+    status_msg("Username was not input correctly");
+    return false;
   }
-  if (Fname.match(/[A-Öa-ö]/) != null) {
-    console.log("fname ok:", Fname);
-  } else {
-    status_msg("First name was not input correctly");
-  }
-  if (Lname.match(/[A-Öa-ö]/) != null) {
-    console.log("lname ok:", Lname);
-  } else {
-    status_msg("Last name was not input correctly");
-  }
-  if (Adress.match(/[A-Öa-Ö]+\s+\d.+\d.+[A-Öa-ö]/) != null) {
-    console.log("Adress ok:", Adress);
-  } else {
-    status_msg("Not a valid adress");
-  }
-  if (Cellphone.match(/[0-9]+.*/) != null) {
-    console.log("Cellphone ok:", Cellphone);
-  } else {
-    status_msg("Not a correct cellphone number");
-  }
-  if (Email.indexOf("@") == -1) {
-    status_msg("Missing @");
-  } else {
-    console.log("Email ok", Email)
-  }
-
-  add_new_customer_to_db(UserName, Fname, Lname, Adress, Cellphone, Email);
 }
 
 /*Inserts new user to DB if all fields was successfully validated */
@@ -315,10 +311,10 @@ function get_user_from_db() {
 
 
 /*Book resource*/
-function book_resource(dateto,datefrom,resid) {
+function book_resource(dateto, datefrom, resid) {
   let custID = USERNAME;
-  console.log(dateto,datefrom,resid,custID);
-  
+  console.log(dateto, datefrom, resid, custID);
+
   $.ajax({
     type: 'POST',
     url: 'src/API/booking/makebooking_XML.php',
@@ -339,7 +335,7 @@ function book_resource(dateto,datefrom,resid) {
 function get_resources_booked_by_customer(customer) {
   let applikation = 'walkbook';
   //let customer = USERNAME;
-  
+
   $.ajax({
     type: 'POST',
     url: 'src/API/booking/getcustomerbookings_XML.php',
@@ -357,23 +353,22 @@ function get_resources_booked_by_customer(customer) {
 /*Search for resource in db */
 function search_resource_in_db() {
   let SearchWalker = document.getElementById('SearchWalker').value;
-
   let resType = 'walkbook';
 
   if (SearchWalker.match(/[A-Öa-ö]/) != null) {
-  $.ajax({
-    type: 'POST',
-    url: 'src/API/booking/getresources_XML.php',
-    data: { //resID : encodeURIComponent(resID),
-      //name: encodeURIComponent(searchvalue),
-      //location:  encodeURIComponent(reslocation),
-      //company: encodeURIComponent(SearchWalker),
-      fulltext: encodeURIComponent(SearchWalker),
-      type: encodeURIComponent(resType)
-    },
-    success: returned_resources_from_db,
-    error: status_msg
-  });
+    $.ajax({
+      type: 'POST',
+      url: 'src/API/booking/getresources_XML.php',
+      data: { //resID : encodeURIComponent(resID),
+        //name: encodeURIComponent(searchvalue),
+        //location:  encodeURIComponent(reslocation),
+        //company: encodeURIComponent(SearchWalker),
+        fulltext: encodeURIComponent(SearchWalker),
+        type: encodeURIComponent(resType)
+      },
+      success: returned_resources_from_db,
+      error: status_msg
+    });
   } else {
     status_msg("Not valid input");
   }
@@ -391,19 +386,19 @@ function customer_added_to_db() {
 
 function book_resource_success(returnedData) {
   status_msg("Booked resource");
- //console.log("Booked: ",returnedData);
+  //console.log("Booked: ",returnedData);
   get_resources_booked_by_customer();
 }
 
 /*Returns and prints all bookings made by loggedin user */
-function booked_resources_by_user(returnedData){
-  
+function booked_resources_by_user(returnedData) {
+
   var resultset = returnedData.childNodes[0];
   for (let i = 0; i < resultset.childNodes.length; i++) {
     var bokings = resultset.childNodes.item(i);
     if (bokings.nodeName == "booking") {
       var booked = resultset.childNodes.item(i);
-        bookedgByUser.innerHTML += "<li>" + booked.attributes['company'].nodeValue  + "</li>";
+      bookedgByUser.innerHTML += "<li>" + booked.attributes['company'].nodeValue + "</li>";
     }
   }
 }
@@ -423,7 +418,7 @@ function returned_user_from_db(returnedData) {
         content_handler('userpage');
         get_resources_booked_by_customer(USERNAME);
       }
-    }else{
+    } else {
       status_msg("User do not exist, please sign up!");
     }
   }
@@ -431,76 +426,74 @@ function returned_user_from_db(returnedData) {
 
 /*Loop through returned resources retrieved from DB and calls funktion to list them on page */
 function returned_resources_from_db(returnedData) {
-  WalkersArray =[];
+  WalkersArray = [];
   var resultset = returnedData.childNodes[0];
-  let name,category;
+  let name, category;
 
   for (i = 0; i < resultset.childNodes.length; i++) {
     if (resultset.childNodes.item(i).nodeName == "resource") {
       var resource = resultset.childNodes.item(i);
       name = resource.attributes['name'].nodeValue;
       category = resource.attributes['category'].nodeValue;
-      WalkersArray.push({name:name,category:category})
-    } else{
-      status_msg("No resources found");
+      WalkersArray.push({ name: name, category: category })
+      status_msg("");
     }
   }
   list_resource_from_db();
 }
 
-/*TODO: Implementera array för att kunna tömma/lägga till/sortera */
-function list_resource_from_db(){
-  sort_search_result('up');
+function list_resource_from_db() {
+  sort_search_result('asc');
 
-  $('.accordion').click(function(){
+  $('.accordion').click(function () {
     let walker = $(this).text();
     console.log(walker);
     $(this).siblings().slideToggle('slow');
     let BookBtn = document.getElementById('Bookbtn');
-    BookBtn.addEventListener('click',function(){
+    BookBtn.addEventListener('click', function () {
       BookWalker(walker);
     });
     $(".datefrom").datepicker({
       dateFormat: "yy-mm-dd",
-      minDate : 0,
+      minDate: 0,
     });
     $(".dateto").datepicker({
       dateFormat: "yy-mm-dd",
-      minDate : 0,
+      minDate: 0,
     });
   }
   );
 }
 
-$("#sortup").click(function(e){
-  sort_search_result("up");
+$("#sortup").click(function (e) {
+  sort_search_result("asc");
 });
 
-$("#sortdown").click(function(e){
-  sort_search_result("down");
+$("#sortdown").click(function (e) {
+  sort_search_result("desc");
 });
 
-function sort_search_result(SortType){
-  let SortedSearch="";
+function sort_search_result(SortType) {
+  let SortedSearch = "";
   let SearchResList = document.getElementById('SearchResList');
   SearchResList.innerHTML = "";
   //console.log(WalkersArray);
- 
+
   // Sort
-  if(SortType=="up"){
-    WalkersArray.sort(function(nameOne, nameTwo){return nameOne.name>nameTwo.name});
-  }else if(SortType=="down"){
-    WalkersArray.sort(function(nameOne, nameTwo){return nameTwo.name>nameOne.name});          
-  }
-  
-  // Build table
-  for(i=0;i<WalkersArray.length;i++){
-    SortedSearch += "<li><button class='accordion'>" + WalkersArray[i].name +
-                    "</button><div class='bokpanel hidebokpanel'>"+ WalkersArray[i].category+
-                    "<div><label>From:<input type='text' class='datefrom'></label></div>"+
-                    "<div><label>To:<input type='text' class='dateto'></label></div>"+
-                    "<button type='button' id='Bookbtn'>Book walker</button></div></li>";              
+  if (SortType == "asc") {
+    WalkersArray.sort(function (nameOne, nameTwo) { return nameOne.name > nameTwo.name });
+  } else if (SortType == "desc") {
+    WalkersArray.sort(function (nameOne, nameTwo) { return nameTwo.name > nameOne.name });
   }
 
-  SearchResList.innerHTML=SortedSearch;
+  // Build table
+  for (i = 0; i < WalkersArray.length; i++) {
+    SortedSearch += "<li><button class='accordion'>" + WalkersArray[i].name +
+      "</button><div class='bokpanel hidebokpanel'>" + WalkersArray[i].category +
+      "<div><label>From:<input type='text' class='datefrom'></label></div>" +
+      "<div><label>To:<input type='text' class='dateto'></label></div>" +
+      "<button type='button' id='Bookbtn'>Book walker</button></div></li>";
+  }
+
+  SearchResList.innerHTML = SortedSearch;
 }

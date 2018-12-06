@@ -25,6 +25,7 @@
                 <div id="panel">
                     <span id="activeuser"></span>
                     <button id="logoutBtn">Logout</button>
+                    <button id="regpage">Register as walker</button>
                 </div>
             </div>
             <span id="loggedin"></span>
@@ -47,7 +48,6 @@
             <button id="signup">Sign up!</button>
             <button id="cancel">Cancel sign up!</button>
         </div>
-
         <div id="userpage">
             <div class="container">
                 <div id="bookform" class="form">
@@ -63,9 +63,10 @@
                 </div>
                 <div id="searchPage">
                     <div id="searchForm">
-                        <input id="" type="search" placeholder="Search by type of walk">
+                        <input id="SearchWalker" type="search" placeholder="Search by type of walk">
                         <button id="searchbtn" type="button">Search</button>
-                        <span><button id="sortup">sort name ascending</button><button id="sortdown">sort name descending</button></span>
+                        <span><button id="sortup">sort name ascending</button><button id="sortdown">sort name
+                                descending</button></span>
                         <div id="searchResult">
                             <ul id="SearchResList">
                                 <!--Li elements inserted from javascript-->
@@ -75,8 +76,26 @@
                 </div>
             </div>
         </div>
+        <div id="WalkerRegistration">
+            <div class="container">
+                <div id="regform" class="form">
+                    <h2>Fill in form to register as a walker</h2>
+                    <div class="form">
+                        <input id="town" type="text" placeholder="Town">
+                        <span>
+                            <input type="radio" value="pkmngo">Pokemon Go
+                            <input type="radio" value="friend">Friend
+                            <input type="radio" value="dog">Dog
+                        </span>
+                        <input id="cost" type="number" placeholder="Price for walking">
+                    </div>
+                    <button id="regbtn">Register!</button>
+                </div>
+            </div>
+        </div>
     </div>
     <script type="text/javascript" src="src/main.js"></script>
+    <script type="text/javascript" src="src/WalkerRegistration.js"></script>
 </body>
 
 </html>
