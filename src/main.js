@@ -8,8 +8,6 @@ let UserIcon = document.getElementById('usr');
 let SearchBtn = document.getElementById('searchbtn');
 let bookedgByUser = document.getElementById("cart");
 
-
-
 /*
  * GLOBAL VARIABLES:
  * USERNAME - hold the account name of a user that exists in the database
@@ -28,11 +26,21 @@ UserIcon.addEventListener("mouseout", Hide_panel);
 SearchBtn.addEventListener('click', search_resource_in_db);
 
 
+
+/*URL handler */
+/*
+window.addEventListener('popstate', function (event) {
+  if (event.state) {
+    alert(event.state);
+  }
+}, false);
+
+
 /*Error handeling */
 function status_msg(err, jqXHR, textStatus, errorThrown) {
   let errorElem = document.getElementById('error');
 
-  if (err != null) {
+  if (err != "") {
     errorElem.innerHTML = err;
   } else {
     errorElem.innerHTML = " ";
@@ -65,6 +73,7 @@ function content_handler(content) {
     Usr.style.display = "none";
     document.getElementById('WalkerRegistration').style.display = 'none';
     status_msg("");
+    //history.pushState(null, null, 'login');
   } else if (content === 'userpage') {
     document.getElementById('signUpdiv').style.display = 'none';
     loginform.style.display = "none";
@@ -78,12 +87,14 @@ function content_handler(content) {
         search_resource_in_db();
       }
     });
-  } else if (content === 'WalkerRegistration') {
+    //history.pushState(null, null, 'user');
+  } else if (content === 'profile') {
     document.getElementById('signUpdiv').style.display = 'none';
     loginform.style.display = "none";
     UserPage.style.display = "none";
     LogOutBtn.style.display = 'block';
     Usr.style.display = "block";
+    //history.pushState(null, null, 'profile');
   }
 }
 
@@ -134,15 +145,11 @@ function active_user(activeUser) {
 //Function to be able to book a walker
 function BookWalker(WalkerToBook) {
   //console.log("entered book walker");
-
+    
   let datefrom = $(".datefrom").val();
   let dateto = $(".dateto").val();
   let goodDate = check_date(dateto, datefrom);
-  //let WalkDistance = document.getElementById('distance').value;
-
-  //console.log("walker to book:",WalkerToBook)
-  //console.log("from: ",datefrom,"to:",dateto);
-
+  console.log("from:",datefrom,"to:",dateto, "walker:",WalkerToBook);
   if (goodDate) {
     book_resource(dateto, datefrom, WalkerToBook);
   } else {
@@ -152,12 +159,13 @@ function BookWalker(WalkerToBook) {
 
 function check_date(dateto, datefrom) {
   if (datefrom != null || dateto != null) {
+    console.log("check date:",datefrom,dateto);
     if (datefrom > dateto) {
-      console.log("this is not ok");
+      console.log("this is not ok", datefrom,">",dateto);
       return false;
     } else {
-      console.log('datefrom', datefrom);
-      console.log('dateto', dateto);
+      //console.log('datefrom', datefrom);
+      //console.log('dateto', dateto);
       return true;
     }
   } else {
@@ -165,11 +173,6 @@ function check_date(dateto, datefrom) {
     return false;
   }
 }
-
-/*
-function slideShowValue() {
-  distanceOutput.value = distanceSlide.value;
-}*/
 
 /*Function for removing characters from string */
 /*
@@ -302,11 +305,15 @@ function get_user_from_db() {
         customerID: encodeURIComponent(unamevalue),
       },
       success: returned_user_from_db,
-      error: status_msg
+      error: returned_user_from_db_error
     });
   } else {
     status_msg("User with that name does not exist or no user inputed");
   }
+}
+
+function returned_user_from_db_error() {
+  status_msg("User does not exist, please creat an account");
 }
 
 
@@ -326,7 +333,7 @@ function book_resource(dateto, datefrom, resid) {
       status: '2'
     },
     success: book_resource_success,
-    error: status_msg
+    error: book_resource_error
   });
 }
 
@@ -344,8 +351,12 @@ function get_resources_booked_by_customer(customer) {
       customerID: customer,
     },
     success: booked_resources_by_user,
-    error: status_msg
+    error: get_resources_booked_by_customer_error
   });
+}
+
+function get_resources_booked_by_customer_error() {
+  //console.log("No resources booked by user");
 }
 
 
@@ -367,11 +378,15 @@ function search_resource_in_db() {
         type: encodeURIComponent(resType)
       },
       success: returned_resources_from_db,
-      error: status_msg
+      error: returned_resources_from_db_error
     });
   } else {
     status_msg("Not valid input");
   }
+}
+
+function returned_resources_from_db_error() {
+  status_msg("No resources found");
 }
 
 
@@ -387,18 +402,25 @@ function customer_added_to_db() {
 function book_resource_success(returnedData) {
   status_msg("Booked resource");
   //console.log("Booked: ",returnedData);
-  get_resources_booked_by_customer();
+  get_resources_booked_by_customer(USERNAME);
+}
+
+function book_resource_error(returnedData) {
+  status_msg("Resource is not bookable or already booked");
+  //console.log("Booked: ",returnedData);
 }
 
 /*Returns and prints all bookings made by loggedin user */
 function booked_resources_by_user(returnedData) {
+  bookedgByUser.innerHTML = "";
 
   var resultset = returnedData.childNodes[0];
   for (let i = 0; i < resultset.childNodes.length; i++) {
     var bokings = resultset.childNodes.item(i);
     if (bokings.nodeName == "booking") {
       var booked = resultset.childNodes.item(i);
-      bookedgByUser.innerHTML += "<li>" + booked.attributes['company'].nodeValue + "</li>";
+      bookedgByUser.innerHTML += "<li>" + "Walker: " + booked.attributes['resourceID'].nodeValue + " Walking with: " + booked.attributes['company'].nodeValue 
+                                        + " From: "+ booked.attributes['date'].nodeValue + " to: " + booked.attributes['dateto'].nodeValue +"</li>";
     }
   }
 }
@@ -418,8 +440,6 @@ function returned_user_from_db(returnedData) {
         content_handler('userpage');
         get_resources_booked_by_customer(USERNAME);
       }
-    } else {
-      status_msg("User do not exist, please sign up!");
     }
   }
 }
@@ -445,24 +465,15 @@ function returned_resources_from_db(returnedData) {
 function list_resource_from_db() {
   sort_search_result('asc');
 
-  $('.accordion').click(function () {
-    let walker = $(this).text();
-    console.log(walker);
-    $(this).siblings().slideToggle('slow');
-    let BookBtn = document.getElementById('Bookbtn');
-    BookBtn.addEventListener('click', function () {
-      BookWalker(walker);
-    });
-    $(".datefrom").datepicker({
-      dateFormat: "yy-mm-dd",
-      minDate: 0,
-    });
-    $(".dateto").datepicker({
-      dateFormat: "yy-mm-dd",
-      minDate: 0,
-    });
-  }
-  );
+
+  $(".datefrom").datepicker({
+    dateFormat: "yy-mm-dd",
+    minDate: 0,
+  });
+  $(".dateto").datepicker({
+    dateFormat: "yy-mm-dd",
+    minDate: 0,
+  });
 }
 
 $("#sortup").click(function (e) {
@@ -477,6 +488,8 @@ function sort_search_result(SortType) {
   let SortedSearch = "";
   let SearchResList = document.getElementById('SearchResList');
   SearchResList.innerHTML = "";
+  let walker;
+  
   //console.log(WalkersArray);
 
   // Sort
@@ -492,8 +505,14 @@ function sort_search_result(SortType) {
       "</button><div class='bokpanel hidebokpanel'>" + WalkersArray[i].category +
       "<div><label>From:<input type='text' class='datefrom'></label></div>" +
       "<div><label>To:<input type='text' class='dateto'></label></div>" +
-      "<button type='button' id='Bookbtn'>Book walker</button></div></li>";
+      "<button type='button' id='Bookbtn' onclick='BookWalker(\""+WalkersArray[i].name+"\")'>Book walker</button></div></li>";
   }
 
   SearchResList.innerHTML = SortedSearch;
+
+  $('.accordion').click(function () {
+    walker = $(this).text();
+    console.log("value of clicked element:",walker);
+    $(this).siblings().slideToggle('slow');
+  });
 }

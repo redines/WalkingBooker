@@ -25,7 +25,7 @@
                 <div id="panel">
                     <span id="activeuser"></span>
                     <button id="logoutBtn">Logout</button>
-                    <button id="regpage">Register as walker</button>
+                    <button id="regpage">Profile</button>
                 </div>
             </div>
             <span id="loggedin"></span>
@@ -83,13 +83,18 @@
                     <div class="form">
                         <input id="town" type="text" placeholder="Town">
                         <span>
-                            <input type="radio" value="pkmngo">Pokemon Go
-                            <input type="radio" value="friend">Friend
-                            <input type="radio" value="dog">Dog
+                            <input id="ch1" type="radio" name="walkertype" value="pkmngo" checked>Pokemon Go
+                            <input id="ch2" type="radio" name="walkertype" value="friend">Friend
+                            <input id="ch3" type="radio" name="walkertype" value="dog">Dog
                         </span>
-                        <input id="cost" type="number" placeholder="Price for walking">
+                        <input id="cost" type="number" placeholder="cost">
+                        <span>
+                            walk length:<input id="slider" type="range" min="1" max="10" value="1" id="length">
+                            <span id="slidevalue"></span>
+                        </span>
+                        <button id="regbtn">Register!</button>
+                        <button id="backbtn">Go back!</button>
                     </div>
-                    <button id="regbtn">Register!</button>
                 </div>
             </div>
         </div>
