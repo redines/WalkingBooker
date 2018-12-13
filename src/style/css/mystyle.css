@@ -11,6 +11,10 @@ ul{
     list-style: none;
 }
 
+#myCanvas{
+    background-color: white;
+}
+
 /*Grid layout*/
 .container{
     display:grid;
@@ -48,6 +52,9 @@ ul{
     grid-area: 2/ 1 / 2 / span 3;
 }
 
+.middle-area{
+    grid-area: 1/2 / 1/2;}
+
 #signUpdiv{
     grid-area: 2/2 / 2/2;
 }
@@ -64,11 +71,6 @@ ul{
 
 #searchForm{
     justify-content: center;
-}
-
-/*Style booking form*/
-#bookform{
-    grid-area: 1/2 / 1/span 2;
 }
 
 #welcomemsg{
@@ -173,4 +175,10 @@ button {
     display: none;
     background-color: white;
     overflow: hidden;
+}
+
+/*My canvas style*/
+
+#myCanvas{
+    border: 2px solid red;
 }

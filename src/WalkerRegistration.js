@@ -13,10 +13,17 @@ RegBtn.addEventListener('click', function () {
     let location = document.getElementById('town').value;
     let cost = document.getElementById('cost').value;
     let TypeOfWalker = $("input[name='walkertype']:checked").val();
-
     console.log(TypeOfWalker, location, cost, WalkDistance);
-
-    register_form_validation(location, TypeOfWalker, cost, WalkDistance);
+    if (TypeOfWalker == "pkmngo" && cost.match(/[0-9]+.*/) != null && WalkDistance.match(/[0-9]+.*/) != null && location.match(/[A-Öa-ö]/) != null) {
+        register_as_walker(location, TypeOfWalker, cost, WalkDistance);
+    } else if (TypeOfWalker == "friend" && cost.match(/[0-9]+.*/) != null && WalkDistance.match(/[0-9]+.*/) != null && location.match(/[A-Öa-ö]/) != null) {
+        register_as_walker(location, TypeOfWalker, cost, WalkDistance);
+    } else if (TypeOfWalker == "dog" && cost.match(/[0-9]+.*/) != null && WalkDistance.match(/[0-9]+.*/) != null && location.match(/[A-Öa-ö]/) != null) {
+        register_as_walker(location, TypeOfWalker, cost, WalkDistance);
+    } else {
+        console.log(TypeOfWalker, location, cost, WalkDistance);
+        status_msg("something went wrong, try refresh and refilling the form");
+    }
 });
 
 
@@ -32,15 +39,6 @@ document.getElementById("slider").oninput = function () {
 function slideShowValue() {
     WalkDistance = document.getElementById('slider').value;
     document.getElementById("slidevalue").innerHTML = WalkDistance;
-}
-
-function register_form_validation(location, cost, ) {
-    if (UserName == "" || Fname == "" || Lname == "" || Adress == "" || Cellphone == "" || Email == "") {
-        status_msg("there are empty fields, all information need to be sent to make an account!");
-    }
-    else if (sign_up_validation(UserName, Fname, Lname, Adress, Cellphone, Email)) {
-        add_new_customer_to_db(UserName, Fname, Lname, Adress, Cellphone, Email);
-    }
 }
 
 /*Register logedin user as a walker */
@@ -70,5 +68,5 @@ function registered_as_resource(returnedData) {
 }
 
 function registered_as_resource_error() {
-    status_msg("Something went wrong, try again!");
+    status_msg("Something went wrong or you are already registered!");
 }

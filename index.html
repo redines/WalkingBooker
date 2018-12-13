@@ -14,7 +14,7 @@
     <title>WalkBook</title>
 </head>
 
-<body onload="check_stored_user()">
+<body onload="check_stored_user(); startupCanvas();">
 
     <div class="container">
         <div class="top-nav">
@@ -50,9 +50,8 @@
         </div>
         <div id="userpage">
             <div class="container">
-                <div id="bookform" class="form">
-                    <h2 id="welcomemsg"></h2>
-                </div>
+                <h2 id="welcomemsg"></h2>
+                <canvas id="myCanvas" width="400" height="400" class="middle-area"></canvas>
                 <div id="bookings">
                     <h3>Booked walker</h3>
                     <div id="booked">
@@ -101,6 +100,7 @@
     </div>
     <script type="text/javascript" src="src/main.js"></script>
     <script type="text/javascript" src="src/WalkerRegistration.js"></script>
+    <script type="text/javascript" src="src/canvas.js"></script>
 </body>
 
 </html>
