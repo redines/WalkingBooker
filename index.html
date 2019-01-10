@@ -14,11 +14,10 @@
     <title>WalkBook</title>
 </head>
 
-<body onload="check_stored_user(); startupCanvas();">
-
+<body onload="init();">
     <div class="container">
         <div class="top-nav">
-            <h1>WalkBook</h1>
+            <canvas id="canvastwo" width="200" height="100" class="middle-area"></canvas>
             <div id="usr">
                 <img id="usricon" src="src/style/usric.svg" alt="user icon" />
                 Hover me
@@ -51,7 +50,7 @@
         <div id="userpage">
             <div class="container">
                 <h2 id="welcomemsg"></h2>
-                <canvas id="myCanvas" width="400" height="400" class="middle-area"></canvas>
+                <canvas id="mapCanvas" width="400" height="800" class="middle-area"></canvas>
                 <div id="bookings">
                     <h3>Booked walker</h3>
                     <div id="booked">

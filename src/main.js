@@ -7,6 +7,7 @@ let panel = document.getElementById('panel');
 let UserIcon = document.getElementById('usr');
 let SearchBtn = document.getElementById('searchbtn');
 let bookedgByUser = document.getElementById("cart");
+let walkerregelem = document.getElementById("WalkerRegistration");
 
 /*
  * GLOBAL VARIABLES:
@@ -19,25 +20,48 @@ let WalkersArray = [];
 let BookedWalkersArray = [];
 
 
-/*Adding event liisteners */
+/*Adding event listeners */
 loginbtn.addEventListener("click", get_user_from_db);
 UserIcon.addEventListener("mouseover", Show_panel);
 UserIcon.addEventListener("mouseout", Hide_panel);
-SearchBtn.addEventListener('click', search_resource_in_db);
+SearchBtn.addEventListener('click', function () {
+  let walkerelem = document.getElementById('SearchWalker').value;
+  search_resource_in_db(walkerelem);
+});
+
+//funktion to initialise
+function init() {
+  check_stored_user();
+  startupCanvas();
+  startupCanvastwo();
+  setupHistory();
+}
 
 
 
 /*URL handler */
-/*
-window.addEventListener('popstate', function (event) {
-  if (event.state) {
-    alert(event.state);
+var page = {page:"profile"};
+
+function historyChange(event) {
+  //alert('hash changed!');
+  if(window.location != "profile"){
+    content_handler("userpage");
+  }else{
+    content_handler('profile');
   }
-}, false);
+}
+
+function updateHistory(token) {
+  history.pushState(page, "", token);
+}
+
+function setupHistory() {
+  window.onpopstate = function (event) { historyChange(event); };
+}
 
 
 /*Error handeling */
-function status_msg(err, jqXHR, textStatus, errorThrown) {
+function status_msg(err) {
   let errorElem = document.getElementById('error');
 
   if (err != "") {
@@ -45,10 +69,6 @@ function status_msg(err, jqXHR, textStatus, errorThrown) {
   } else {
     errorElem.innerHTML = " ";
   }
-
-  //console.log(jqXHR);
-  //status_msg("Please fill out form");
-  //alert("AJAX Error:\n"+errorThrown);
 }
 
 /*
@@ -70,6 +90,7 @@ function content_handler(content) {
     loginform.style.display = "block";
     UserPage.style.display = "none";
     LogOutBtn.style.display = 'none';
+    walkerregelem.style.display = 'none';
     Usr.style.display = "none";
     document.getElementById('WalkerRegistration').style.display = 'none';
     status_msg("");
@@ -77,6 +98,7 @@ function content_handler(content) {
   } else if (content === 'userpage') {
     document.getElementById('signUpdiv').style.display = 'none';
     loginform.style.display = "none";
+    walkerregelem.style.display = 'none';
     UserPage.style.display = "block";
     LogOutBtn.style.display = 'block';
     Usr.style.display = "block";
@@ -87,14 +109,15 @@ function content_handler(content) {
         search_resource_in_db();
       }
     });
-    //history.pushState(null, null, 'user');
+    updateHistory("userpage");
   } else if (content === 'profile') {
     document.getElementById('signUpdiv').style.display = 'none';
     loginform.style.display = "none";
     UserPage.style.display = "none";
+    walkerregelem.style.display = 'block';
     LogOutBtn.style.display = 'block';
     Usr.style.display = "block";
-    //history.pushState(null, null, 'profile');
+    updateHistory("profile");
   }
 }
 
@@ -110,7 +133,6 @@ function check_stored_user() {
   }
   else {
     content_handler('logindiv');
-    //console.log("no user logged in");
   }
 }
 
@@ -145,11 +167,11 @@ function active_user(activeUser) {
 //Function to be able to book a walker
 function BookWalker(WalkerToBook) {
   //console.log("entered book walker");
-    
+
   let datefrom = $(".datefrom").val();
   let dateto = $(".dateto").val();
   let goodDate = check_date(dateto, datefrom);
-  console.log("from:",datefrom,"to:",dateto, "walker:",WalkerToBook);
+  console.log("from:", datefrom, "to:", dateto, "walker:", WalkerToBook);
   if (goodDate) {
     book_resource(dateto, datefrom, WalkerToBook);
   } else {
@@ -159,13 +181,11 @@ function BookWalker(WalkerToBook) {
 
 function check_date(dateto, datefrom) {
   if (datefrom != null || dateto != null) {
-    console.log("check date:",datefrom,dateto);
+    console.log("check date:", datefrom, dateto);
     if (datefrom > dateto) {
-      console.log("this is not ok", datefrom,">",dateto);
+      console.log("this is not ok", datefrom, ">", dateto);
       return false;
     } else {
-      //console.log('datefrom', datefrom);
-      //console.log('dateto', dateto);
       return true;
     }
   } else {
@@ -173,13 +193,6 @@ function check_date(dateto, datefrom) {
     return false;
   }
 }
-
-/*Function for removing characters from string */
-/*
-function remove_char_from_string(text, character) {
-  text = text.replace(character, '');
-  return text;
-}*/
 
 panel.style.display = 'none';
 
@@ -290,9 +303,18 @@ function add_new_customer_to_db(username, fname, lname, adress, cellphone, email
       auxdata: encodeURIComponent(cellphone)
     },
     success: customer_added_to_db,
-    error: status_msg
+    error: customer_added_to_db_error
   });
 }
+
+function customer_added_to_db() {
+  status_msg("User successfully added!");
+}
+
+function customer_added_to_db_error() {
+  status_msg("Something went wrong with registering, refresh and try again later");
+}
+
 
 /*Login*/
 function get_user_from_db() {
@@ -308,19 +330,42 @@ function get_user_from_db() {
       error: returned_user_from_db_error
     });
   } else {
-    status_msg("User with that name does not exist or no user inputed");
+    status_msg("Wrong input, only A-Ö supported");
+  }
+}
+
+/*Loop returned data for userid and login user if user exist in database*/
+function returned_user_from_db(returnedData) {
+  var resultset = returnedData.childNodes[0];
+  //console.log(resultset);
+  if (resultset.childElementCount != 0) {
+    for (let i = 0; i < resultset.childNodes.length; i++) {
+      var customer = resultset.childNodes.item(i);
+      if (customer.nodeName === "customer") {
+        USERNAME = customer.attributes['id'].nodeValue;
+        console.log(USERNAME);
+        if (USERNAME === unamevalue) {
+          //console.log('username: ', USERNAME);
+          store_logedin_user(unamevalue);
+          active_user(unamevalue);
+          content_handler('userpage');
+          get_resources_booked_by_customer(USERNAME);
+        }
+      }
+    }
+  } else {
+    status_msg("User do not exist")
   }
 }
 
 function returned_user_from_db_error() {
-  status_msg("User does not exist, please creat an account");
+  status_msg("Something went wrong, refresh and try again or come back later");
 }
 
 
 /*Book resource*/
 function book_resource(dateto, datefrom, resid) {
   let custID = USERNAME;
-  console.log(dateto, datefrom, resid, custID);
 
   $.ajax({
     type: 'POST',
@@ -337,8 +382,18 @@ function book_resource(dateto, datefrom, resid) {
   });
 }
 
+function book_resource_success() {
+  status_msg("Booked resource");
+  get_resources_booked_by_customer(USERNAME);
+}
 
-/*Book resource*/
+function book_resource_error() {
+  status_msg("Resource is not bookable or already booked");
+}
+
+
+
+
 function get_resources_booked_by_customer(customer) {
   let applikation = 'walkbook';
   //let customer = USERNAME;
@@ -355,25 +410,35 @@ function get_resources_booked_by_customer(customer) {
   });
 }
 
+/*Returns and prints all bookings made by loggedin user */
+function booked_resources_by_user(returnedData) {
+  bookedgByUser.innerHTML = "";
+
+  var resultset = returnedData.childNodes[0];
+  for (let i = 0; i < resultset.childNodes.length; i++) {
+    var bokings = resultset.childNodes.item(i);
+    if (bokings.nodeName == "booking") {
+      var booked = resultset.childNodes.item(i);
+      bookedgByUser.innerHTML += "<li>" + "Walker: " + booked.attributes['resourceID'].nodeValue +
+        " Walking with: " + booked.attributes['company'].nodeValue +
+        " From: " + booked.attributes['date'].nodeValue +
+        " to: " + booked.attributes['dateto'].nodeValue + "</li>";
+    }
+  }
+}
+
 function get_resources_booked_by_customer_error() {
   //console.log("No resources booked by user");
 }
 
-
-
 /*Search for resource in db */
-function search_resource_in_db() {
-  let SearchWalker = document.getElementById('SearchWalker').value;
+function search_resource_in_db(SearchWalker) {
   let resType = 'walkbook';
-
   if (SearchWalker.match(/[A-Öa-ö]/) != null) {
     $.ajax({
       type: 'POST',
       url: 'src/API/booking/getresources_XML.php',
-      data: { //resID : encodeURIComponent(resID),
-        //name: encodeURIComponent(searchvalue),
-        //location:  encodeURIComponent(reslocation),
-        //company: encodeURIComponent(SearchWalker),
+      data: {
         fulltext: encodeURIComponent(SearchWalker),
         type: encodeURIComponent(resType)
       },
@@ -385,86 +450,33 @@ function search_resource_in_db() {
   }
 }
 
-function returned_resources_from_db_error() {
-  status_msg("No resources found");
-}
-
-
-/*AJAX SUCCESS FUNCTIONS */
-/*returns ok if a new user was insetrted to DB correctly, add message to show taht customer was added correctly */
-function customer_added_to_db() {
-  status_msg("User successfully added!");
-  //console.log('signed up!');
-  //console.log(returnedData);
-}
-
-
-function book_resource_success(returnedData) {
-  status_msg("Booked resource");
-  //console.log("Booked: ",returnedData);
-  get_resources_booked_by_customer(USERNAME);
-}
-
-function book_resource_error(returnedData) {
-  status_msg("Resource is not bookable or already booked");
-  //console.log("Booked: ",returnedData);
-}
-
-/*Returns and prints all bookings made by loggedin user */
-function booked_resources_by_user(returnedData) {
-  bookedgByUser.innerHTML = "";
-
-  var resultset = returnedData.childNodes[0];
-  for (let i = 0; i < resultset.childNodes.length; i++) {
-    var bokings = resultset.childNodes.item(i);
-    if (bokings.nodeName == "booking") {
-      var booked = resultset.childNodes.item(i);
-      bookedgByUser.innerHTML += "<li>" + "Walker: " + booked.attributes['resourceID'].nodeValue + " Walking with: " + booked.attributes['company'].nodeValue 
-                                        + " From: "+ booked.attributes['date'].nodeValue + " to: " + booked.attributes['dateto'].nodeValue +"</li>";
-    }
-  }
-}
-
-/*Loop returned data for userid and login user if user exist in database*/
-function returned_user_from_db(returnedData) {
-  var resultset = returnedData.childNodes[0];
-  for (let i = 0; i < resultset.childNodes.length; i++) {
-    var customer = resultset.childNodes.item(i);
-    if (customer.nodeName === "customer") {
-      USERNAME = customer.attributes['id'].nodeValue;
-      console.log(USERNAME);
-      if (USERNAME === unamevalue) {
-        //console.log('username: ', USERNAME);
-        store_logedin_user(unamevalue);
-        active_user(unamevalue);
-        content_handler('userpage');
-        get_resources_booked_by_customer(USERNAME);
-      }
-    }
-  }
-}
-
-/*Loop through returned resources retrieved from DB and calls funktion to list them on page */
 function returned_resources_from_db(returnedData) {
   WalkersArray = [];
   var resultset = returnedData.childNodes[0];
   let name, category;
 
-  for (i = 0; i < resultset.childNodes.length; i++) {
-    if (resultset.childNodes.item(i).nodeName == "resource") {
-      var resource = resultset.childNodes.item(i);
-      name = resource.attributes['name'].nodeValue;
-      category = resource.attributes['category'].nodeValue;
-      WalkersArray.push({ name: name, category: category })
-      status_msg("");
+  if (resultset.childElementCount != 0) {
+    for (i = 0; i < resultset.childNodes.length; i++) {
+      if (resultset.childNodes.item(i).nodeName == "resource") {
+        var resource = resultset.childNodes.item(i);
+        name = resource.attributes['name'].nodeValue;
+        category = resource.attributes['category'].nodeValue;
+        WalkersArray.push({ name: name, category: category })
+        status_msg("");
+      }
     }
+  } else {
+    status_msg("no resource found");
   }
   list_resource_from_db();
 }
 
+function returned_resources_from_db_error() {
+  status_msg("No resources found");
+}
+
 function list_resource_from_db() {
   sort_search_result('asc');
-
 
   $(".datefrom").datepicker({
     dateFormat: "yy-mm-dd",
@@ -489,7 +501,7 @@ function sort_search_result(SortType) {
   let SearchResList = document.getElementById('SearchResList');
   SearchResList.innerHTML = "";
   let walker;
-  
+
   //console.log(WalkersArray);
 
   // Sort
@@ -505,14 +517,14 @@ function sort_search_result(SortType) {
       "</button><div class='bokpanel hidebokpanel'>" + WalkersArray[i].category +
       "<div><label>From:<input type='text' class='datefrom'></label></div>" +
       "<div><label>To:<input type='text' class='dateto'></label></div>" +
-      "<button type='button' id='Bookbtn' onclick='BookWalker(\""+WalkersArray[i].name+"\")'>Book walker</button></div></li>";
+      "<button type='button' id='Bookbtn' onclick='BookWalker(\"" + WalkersArray[i].name + "\")'>Book walker</button></div></li>";
   }
 
   SearchResList.innerHTML = SortedSearch;
 
   $('.accordion').click(function () {
     walker = $(this).text();
-    console.log("value of clicked element:",walker);
+    console.log("value of clicked element:", walker);
     $(this).siblings().slideToggle('slow');
   });
 }
